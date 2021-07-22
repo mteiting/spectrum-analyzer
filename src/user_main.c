@@ -1,6 +1,7 @@
 #include "osapi.h"
 #include "user_interface.h"
 #include "mem.h"
+#include "wifi/wifi_main.h"
 
 static os_timer_t ptimer;
 
@@ -68,20 +69,22 @@ void blinky(void *arg)
 
 void ICACHE_FLASH_ATTR user_init(void)
 {
+    os_event_t *wifiTaskQueue;
+
     gpio_init();
-
     uart_init(115200, 115200);
+    system_update_cpu_freq(SYS_CPU_160MHZ);
     os_printf("\nSDK version:%s\n", system_get_sdk_version());
-    os_printf("hello world\n");
-
-    // Disable WiFi
-    wifi_set_opmode(NULL_MODE);
+    os_printf("CPU Freq %d\n", system_get_cpu_freq()); 
 
     PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO2_U, FUNC_GPIO2);
 
     os_timer_disarm(&ptimer);
     os_timer_setfn(&ptimer, (os_timer_func_t *)blinky, NULL);
     os_timer_arm(&ptimer, 500, 1);
+
+    wifiTaskQueue = (os_event_t *)os_malloc(sizeof(os_event_t) * WIFI_QUEUE_LEN);
+    system_os_task(wifi_task, USER_TASK_PRIO_0, wifiTaskQueue, WIFI_QUEUE_LEN);
 }
 
 
