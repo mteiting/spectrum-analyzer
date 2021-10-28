@@ -17,9 +17,20 @@ String getSSID()
   return stSsidWithMac;
 }
 
-
-void handleRoot() {
-  webServer.send(200, "text/plain", "hello from esp8266!");
+void handle_OnConnect() {
+  // webServer.send(200, "text/plain", "hello from esp8266!");
+  // Webseiten-Überschrift
+  String stHtmlContent = String("<!DOCTYPE html><html>");
+  stHtmlContent += "<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">";
+  stHtmlContent +=("<link rel=\"icon\" href=\"data:,\">");
+  stHtmlContent +=("<style>html { font-family: Helvetica; display: inline-block; margin: 0px auto; text-align: center;}");
+  stHtmlContent +=(".button { background-color: #333344; border: none; color: white; padding: 16px 40px;");
+  stHtmlContent +=("text-decoration: none; font-size: 30px; margin: 2px; cursor: pointer;}");
+  stHtmlContent +=(".button2 {background-color: #888899;}</style></head>");
+  stHtmlContent +=("<body><h1>ESP8266 Web Server</h1>");
+  stHtmlContent +=("</body></html>");
+  stHtmlContent +=("");
+  webServer.send(200, "text/plain", stHtmlContent);
 }
 
 void handleNotFound(){
@@ -69,17 +80,15 @@ void setupWifi()
 
 void setupServerContent()
 {
-  webServer.on("/", handleRoot);
+  webServer.on("/", handle_OnConnect);
   webServer.on("/inline", [](){
     webServer.send(200, "text/plain", "this works as well");
   });
 
   webServer.onNotFound(handleNotFound);
-  webServer.begin();
   Serial.println("HTTP server started");
+  webServer.begin();
 }
-
-
 
 void setup(void){
   Serial.begin(115200);
@@ -93,3 +102,4 @@ void setup(void){
 void loop(void){
   webServer.handleClient();
 }
+                      
