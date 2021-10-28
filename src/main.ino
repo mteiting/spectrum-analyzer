@@ -8,6 +8,16 @@ const char* password = "1234567890";
 ESP8266WebServer webServer(80);
 
 
+String getSSID()
+{
+  String stSsidWithMac = String(ssid);
+  stSsidWithMac += "_" + WiFi.macAddress();
+  stSsidWithMac.replace(":", "");
+  Serial.println(stSsidWithMac);
+  return stSsidWithMac;
+}
+
+
 void handleRoot() {
   webServer.send(200, "text/plain", "hello from esp8266!");
 }
@@ -29,15 +39,16 @@ void handleNotFound(){
 
 void setupAccessPoint()
 {
+  Serial.println("init AP ...");
   WiFi.mode(WIFI_AP);
-  if(true == WiFi.softAP(ssid, password))
+  if(true == WiFi.softAP(getSSID().c_str(), password))
     Serial.println("AP is up");
 }
 
 void setupWifi()
 {
   WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
+  WiFi.begin(getSSID().c_str(), password);
 
   Serial.println("");
   // Wait for connection
@@ -47,7 +58,7 @@ void setupWifi()
   }
   Serial.println("");
   Serial.print("Connected to ");
-  Serial.println(ssid);
+  Serial.println(getSSID().c_str());
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
 
@@ -73,6 +84,8 @@ void setupServerContent()
 void setup(void){
   Serial.begin(115200);
   system_update_cpu_freq(160);
+  delay(1000);
+  while(!Serial);
   setupAccessPoint();
   setupServerContent();
 }
