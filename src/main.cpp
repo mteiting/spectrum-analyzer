@@ -2,25 +2,37 @@
 #include <WiFi.h>
 #include <WiFiClient.h>
 #include <WebServer.h>
-#include <map>
-#include <iterator>
+#include <Adafruit_NeoPixel.h>
+
+#define LED_PIN 15
+#define LED_COUNT 20
+
+// Declare our NeoPixel strip object:
+Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
+// Argument 1 = Number of pixels in NeoPixel strip
+// Argument 2 = Arduino pin number (most are valid)
+// Argument 3 = Pixel type flags, add together as needed:
+//   NEO_KHZ800  800 KHz bitstream (most NeoPixel products w/WS2812 LEDs)
+//   NEO_KHZ400  400 KHz (classic 'v1' (not v2) FLORA pixels, WS2811 drivers)
+//   NEO_GRB     Pixels are wired for GRB bitstream (most NeoPixel products)
+//   NEO_RGB     Pixels are wired for RGB bitstream (v1 FLORA pixels, not v2)
+//   NEO_RGBW    Pixels are wired for RGBW bitstream (NeoPixel RGBW products)
 
 const char *ssid = "SpectrumAnalyzer";
 const char *password = "1234567890";
 
 static WiFiServer server(80);
-static std::map<IPAddress, WiFiClient *> clients;
 
 void getHTMLPage(WiFiClient &currentClient)
 {
   Serial.println("Add Client");
-  clients.insert(std::make_pair(currentClient.localIP(), &currentClient));
+  // clients.insert(std::make_pair(currentClient.localIP(), &currentClient));
 
   currentClient.println("HTTP/1.1 200 OK");
   currentClient.println("Content-type:text/html");
   currentClient.println("Connection: close");
   currentClient.println();
-  //HTML content
+  // HTML content
   currentClient.println("<!DOCTYPE html><html>");
   currentClient.println("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
   currentClient.println("<link rel=\"icon\" href=\"data:,\">");
@@ -69,15 +81,48 @@ void setupWifi()
   setupAccessPoint();
 }
 
+void setupLEDs()
+{
+  strip.begin();
+  strip.show(); // Initialize all pixels to 'off'
+  strip.setBrightness(10);
+}
+
 void setup()
 {
   Serial.begin(115200);
   setupWifi();
   setupServer();
+  setupLEDs();
+}
+
+void getRGBColor(uint8_t &red, uint8_t &green, uint8_t &blue)
+{
+  red = rand() % 256;
+  green = rand() % 256;
+  blue = rand() % 256;
+}
+
+void ledTask()
+{
+  static auto offset = millis();
+  auto now = millis();
+
+  if((now - offset) < 1000)
+    return;
+
+  offset = millis();
+  uint8_t red, green, blue = 0;
+  getRGBColor(red, green, blue);
+  uint32_t color = strip.Color(red, green, blue);
+  strip.fill(color, 0, LED_COUNT);
+  strip.show();
 }
 
 void loop()
 {
+  ledTask();
+
   WiFiClient client = server.available();
   if (!client)
     return;
