@@ -3,7 +3,7 @@
 #include <SparkFun_ADS1015_Arduino_Library.h>
 #include <arduinoFFT.h>
 #include <sstream>
-#include <iomanip>
+#include <algorithm>
 
 #define SAMPLE_SIZE 128
 #define SAMPLE_FREQUENCY 16000
@@ -26,15 +26,13 @@ int get_frequency(int i)
   if (i < 2) {
     return 0;
   }
-  return (i - 2) * (SAMPLE_FREQUENCY / SAMPLE_SIZE );
+  return (i - 2) * (SAMPLE_FREQUENCY * 2 / SAMPLE_SIZE);
 }
 
 void createBands(int i, int amplitude)
 {
   int frequency = get_frequency(i);
   uint8_t band = 0;
-
-  Serial.printf("%2d: %2d\n", i, frequency);
 
   if (frequency <= 125)
   {
@@ -69,15 +67,9 @@ void createBands(int i, int amplitude)
     band = 7;
   }
 
-  int max_amplitude = 2048; // amplitude;
-  if (amplitude > max_amplitude)
-  {
-    amplitude = max_amplitude;
-  }
-  if (amplitude > bands[band])
-  {
-    bands[band] = amplitude;
-  }
+  const int max_amplitude = 2048;
+  amplitude = std::min(amplitude, max_amplitude);
+  bands[band] = std::max(amplitude, (int)band);
 }
 
 void setup() {  
@@ -117,7 +109,7 @@ void loop() {
     int k = 0;
     memset(bands, 0, sizeof(int) * 7);
     std::stringstream result;
-    for (int i = 2; i < SAMPLE_SIZE; i++)
+    for (int i = 2; i < SAMPLE_SIZE / 2; i++)
     { 
       createBands(i, vReal[i]);
         //maxvalue = maxvalue < vReal[i] ? vReal[i] : maxvalue;
@@ -128,7 +120,7 @@ void loop() {
     for (int i = 0; i < BANDS; i++)
     {
       bands_normalized[i] = bands[i] * 100 / 2048;
-      //Serial.printf("%d : %d\t", i+1, bands_normalized[i]);
+      Serial.printf("%d : %3d | %4d\t", i+1, bands_normalized[i], bands[i]);
     }
     Serial.println();
     
