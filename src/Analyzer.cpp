@@ -54,7 +54,7 @@ void Analyzer::loop()
     getRGBColor(red, green, blue);
     uint32_t color = _ledControl->Color(red, green, blue);
 
-    _ledControl->fill(color, strip->getNumber(), strip->getNumOfLEDs());
+    _ledControl->fill(color, strip->getLedOffset(), strip->getNumOfLEDs());
     _ledControl->show();
   }  
 }

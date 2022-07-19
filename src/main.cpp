@@ -23,11 +23,11 @@ void setup()
   setupWifi();
   
   analyzer.setup();
-  Band *band = new Band(0, 0, 20000, 20);
-  Band *band2 = new Band(20, 0, 20000, 20);
-  Band *band3 = new Band(40, 0, 20000, 20);
-  Band *band4 = new Band(60, 0, 20000, 20);
-  Band *band5 = new Band(80, 0, 20000, 20);
+  Band *band = new Band(0, 0, 20000, 0, 20);
+  Band *band2 = new Band(1, 0, 20000, 20, 20);
+  Band *band3 = new Band(2, 0, 20000, 40, 20);
+  Band *band4 = new Band(3, 0, 20000, 60, 20);
+  Band *band5 = new Band(4, 0, 20000, 80, 20);
   analyzer.setBand(band);
   analyzer.setBand(band2);
   analyzer.setBand(band3);
