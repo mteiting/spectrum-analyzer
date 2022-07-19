@@ -21,8 +21,7 @@ void setup()
 {
   Serial.begin(115200);
   setupWifi();
-  setupServer();
-
+  
   analyzer.setup();
   Band *band = new Band(0, 0, 20000, 20);
   Band *band2 = new Band(20, 0, 20000, 20);

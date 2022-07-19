@@ -37,6 +37,22 @@ static void getHTMLPage(WiFiClient &currentClient)
   currentClient.println();
 }
 
+static void setupServer()
+{
+  IPAddress IP = WiFi.softAPIP();
+  Serial.print("AP IP address: ");
+  Serial.println(IP);
+  server.begin();
+}
+
+static void setupAccessPoint()
+{
+  Serial.println("init AP ...");
+  WiFi.mode(WIFI_AP);
+  if (true == WiFi.softAP(getSSID().c_str(), password))
+    Serial.println("AP is up");
+}
+
 String getSSID()
 {
   String stSsidWithMac = String(ssid);
@@ -46,25 +62,10 @@ String getSSID()
   return stSsidWithMac;
 }
 
-void setupServer()
-{
-  IPAddress IP = WiFi.softAPIP();
-  Serial.print("AP IP address: ");
-  Serial.println(IP);
-  server.begin();
-}
-
-void setupAccessPoint()
-{
-  Serial.println("init AP ...");
-  WiFi.mode(WIFI_AP);
-  if (true == WiFi.softAP(getSSID().c_str(), password))
-    Serial.println("AP is up");
-}
-
 void setupWifi()
 {
   setupAccessPoint();
+  setupServer();
 }
 
 void WifiTask()
