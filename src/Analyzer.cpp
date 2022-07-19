@@ -37,14 +37,14 @@ void Analyzer::setBand(Band *newBand)
   this->_bands.push_back(newBand);
 }
 
-void Analyzer::loop()
+void Analyzer::loop(int *band_amplitudes)
 {
   if (_ledControl == nullptr)
     return;
 
   for (const auto &strip : _bands)
   {
-    strip->updateBandLevel((rand() % 100));
+    strip->updateBandLevel(band_amplitudes[strip->getNumber()]);
 
     uint16_t u16NumOfLed = strip->getNumOfLEDs();
     for (uint16_t led = 0; led < u16NumOfLed; led++)

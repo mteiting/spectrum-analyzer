@@ -3,7 +3,7 @@
 #include <Arduino.h>
 
 #define LED_PIN 15
-#define LED_COUNT 100
+#define LED_COUNT 140
 
 
 struct TstRGB

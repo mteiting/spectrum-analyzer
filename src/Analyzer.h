@@ -11,7 +11,7 @@ public:
   virtual void setup() = 0;
   virtual std::vector<Band *> getBands() = 0;
   virtual void setBand(Band *newBand) = 0;
-  virtual void loop() = 0;
+  virtual void loop(int* bands_normalized) = 0;
 };
 
 class Analyzer : public IAnalyzer
@@ -26,7 +26,7 @@ public:
   void setup() override;
   std::vector<Band *> getBands() override;
   void setBand(Band *newBand) override;
-  void loop() override;
+  void loop(int* bands_normalized) override;
 };
 
 //For future stuff
@@ -42,5 +42,5 @@ public:
   void setup() override;
   std::vector<Band *> getBands() override;
   void setBand(Band *newBand) override;
-  void loop() override;
+  void loop(int* bands_normalized) override;
 };

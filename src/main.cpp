@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include <Wire.h>
+// #include <Wire.h>
 #include <SparkFun_ADS1015_Arduino_Library.h>
 #include <arduinoFFT.h>
 #include <sstream>
@@ -21,14 +21,15 @@ double vImag[SAMPLE_SIZE];
 double maxvalue = 0;
 arduinoFFT FFT = arduinoFFT();
 
-int bands[] = { 0, 0, 0, 0, 0, 0, 0 };
-int bands_normalized[] = { 0, 0, 0, 0, 0, 0, 0 };
+int bands[] = {0, 0, 0, 0, 0, 0, 0};
+int bands_normalized[] = {0, 0, 0, 0, 0, 0, 0};
 
 bool bMicInitialized;
 
-int get_frequency(int i) 
+int get_frequency(int i)
 {
-  if (i < 2) {
+  if (i < 2)
+  {
     return 0;
   }
   return (i - 2) * (SAMPLE_FREQUENCY * 2 / SAMPLE_SIZE);
@@ -92,7 +93,7 @@ static Analyzer analyzer(&strip);
 void setup()
 {
   Serial.begin(115200);
-  Wire.begin();
+  Wire.begin(-1, -1, 1000000UL);
 
   bMicInitialized = microphone.begin();
   if (bMicInitialized)
@@ -112,59 +113,62 @@ void setup()
   Band *band3 = new Band(2, 40, 20, EnLedCountDir::enLedCountDir_Top);
   Band *band4 = new Band(3, 60, 20, EnLedCountDir::enLedCountDir_Down);
   Band *band5 = new Band(4, 80, 20, EnLedCountDir::enLedCountDir_Top);
+  Band *band6 = new Band(5, 100, 20, EnLedCountDir::enLedCountDir_Down);
+  Band *band7 = new Band(6, 120, 20, EnLedCountDir::enLedCountDir_Top);
   analyzer.setBand(band);
   analyzer.setBand(band2);
   analyzer.setBand(band3);
   analyzer.setBand(band4);
   analyzer.setBand(band5);
+  analyzer.setBand(band6);
+  analyzer.setBand(band7);
 }
 
 void loop()
 {
   if (!bMicInitialized)
-    {
-      Serial.println("Mic not initialized...");
-      delay(1000);
-    }
+  {
+    Serial.println("Mic not initialized...");
+    delay(1000);
+  }
 
-    for (int i = 0; i < SAMPLE_SIZE; i++)
-    {
-      vReal[i] = (double) microphone.getSingleEnded(2); 
-      vImag[i] = 0.0;
-    }    
+  for (int i = 0; i < SAMPLE_SIZE; i++)
+  {
+    vReal[i] = (double)microphone.getSingleEnded(2);
+    vImag[i] = 0.0;
+  }
 
-    FFT.Windowing(vReal, SAMPLE_SIZE, FFT_WIN_TYP_HAMMING, FFT_FORWARD);
-    FFT.Compute(vReal, vImag, FFT_WIN_TYP_HAMMING, FFT_FORWARD);
-    FFT.ComplexToMagnitude(vReal, vImag, SAMPLE_SIZE);
-    double x = FFT.MajorPeak(vReal, SAMPLE_SIZE, SAMPLE_FREQUENCY);
-    
-    int k = 0;
-    memset(bands, 0, sizeof(int) * 7);
-    std::stringstream result;
-    for (int i = 2; i < SAMPLE_SIZE / 2; i++)
-    { 
-      createBands(i, vReal[i]);
-        //maxvalue = maxvalue < vReal[i] ? vReal[i] : maxvalue;
-        //result << std::setw(2) << k++ << ": ";
-        //result << std::setprecision(2) << std::fixed << std::setw(5) << vReal[i] << " ; ";        
-    }
+  FFT.Windowing(vReal, SAMPLE_SIZE, FFT_WIN_TYP_HAMMING, FFT_FORWARD);
+  FFT.Compute(vReal, vImag, FFT_WIN_TYP_HAMMING, FFT_FORWARD);
+  FFT.ComplexToMagnitude(vReal, vImag, SAMPLE_SIZE);
+  double x = FFT.MajorPeak(vReal, SAMPLE_SIZE, SAMPLE_FREQUENCY);
 
-    for (int i = 0; i < BANDS; i++)
-    {
-      bands_normalized[i] = bands[i] * 100 / 2048;
-      Serial.printf("%d : %3d | %4d\t", i+1, bands_normalized[i], bands[i]);
-    }
-    Serial.println();
+  int k = 0;
+  memset(bands, 0, sizeof(int) * 7);
+  std::stringstream result;
+  for (int i = 2; i < SAMPLE_SIZE / 2; i++)
+  {
+    createBands(i, vReal[i]);
+    // maxvalue = maxvalue < vReal[i] ? vReal[i] : maxvalue;
+    // result << std::setw(2) << k++ << ": ";
+    // result << std::setprecision(2) << std::fixed << std::setw(5) << vReal[i] << " ; ";
+  }
 
+  for (int i = 0; i < BANDS; i++)
+  {
+    bands_normalized[i] = bands[i] * 100 / 2048;
+    Serial.printf("%d : %3d | %4d\t", i + 1, bands_normalized[i], bands[i]);
+  }
+  Serial.println();
 
   constexpr uint16_t REFRESH_RATE_MS = 200;
 
   static auto offset = millis();
   if ((millis() - offset) > REFRESH_RATE_MS)
   {
-    analyzer.loop();
+    analyzer.loop(bands_normalized);
     offset = millis();
   }
-  
+
   WifiTask();
 }
