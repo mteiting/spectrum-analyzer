@@ -2,18 +2,27 @@
 #include "Analyzer.h"
 #include "led.h"
 
+constexpr uint8_t DEFAULT_BRIGHTNESS = 10;
+
 Analyzer::Analyzer(Adafruit_NeoPixel *ledControl) : _ledControl(ledControl)
 {
-  constexpr uint8_t DEFAULT_BRIGHTNESS = 10;
-  _ledControl->begin();
-  _ledControl->show();
-  _ledControl->setBrightness(DEFAULT_BRIGHTNESS);
+  if(_ledControl == nullptr)
+    Serial.println("ledControl could was not created");
 }
 
 Analyzer::~Analyzer()
 {
   if (_ledControl)
     delete (_ledControl);
+}
+
+void Analyzer::setup()
+{
+  if(_ledControl == nullptr)
+    return;
+  _ledControl->begin();
+  _ledControl->show();
+  _ledControl->setBrightness(DEFAULT_BRIGHTNESS);
 }
 
 std::vector<Band *> Analyzer::getBands()
@@ -30,9 +39,11 @@ void Analyzer::setBand(Band *newBand)
 
 void Analyzer::loop()
 {
+  if(_ledControl == nullptr)
+    return;
+
   static auto offset = millis();
   auto now = millis();
-
   if ((now - offset) < 1000)
     return;
 

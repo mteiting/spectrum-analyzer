@@ -17,7 +17,7 @@
   //   NEO_GRB     Pixels are wired for GRB bitstream (most NeoPixel products)
   //   NEO_RGB     Pixels are wired for RGB bitstream (v1 FLORA pixels, not v2)
   //   NEO_RGBW    Pixels are wired for RGBW bitstream (NeoPixel RGBW products)
-  static Analyzer analyzer = 0;
+  static Analyzer analyzer(&strip);
 
 
 
@@ -90,14 +90,14 @@ void setup()
   setupWifi();
   setupServer();
 
-  // analyzer = Analyzer(&strip);
-  // Band *band = new Band(0, 0, 20000, 20);
-  // analyzer.setBand(band);
+  analyzer.setup();
+  Band *band = new Band(0, 0, 20000, 20);
+  analyzer.setBand(band);
 }
 
 void loop()
 {
-  //analyzer.loop();
+  analyzer.loop();
 
   WiFiClient client = server.available();
   if (!client)
