@@ -50,3 +50,13 @@ void Band::setNumber(uint8_t newNumber)
 {
   this->_u8Number = newNumber;
 }
+
+void Band::updateBandLevel(uint16_t newLevel)
+{
+
+}
+
+TstRGB &Band::getLedColor(uint16_t u16Number)
+{
+  
+}
