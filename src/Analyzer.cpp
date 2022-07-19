@@ -48,14 +48,13 @@ void Analyzer::loop()
     return;
 
   offset = millis();
-  uint8_t red, green, blue = 0;
-  getRGBColor(red, green, blue);
-  uint32_t color = _ledControl->Color(red, green, blue);
-
   for(const auto &strip : _bands)
   {
+    uint8_t red, green, blue = 0;
+    getRGBColor(red, green, blue);
+    uint32_t color = _ledControl->Color(red, green, blue);
+
     _ledControl->fill(color, strip->getNumber(), strip->getNumOfLEDs());
     _ledControl->show();
-    Serial.printf("set %u bis %u", strip->getNumber(), strip->getNumOfLEDs());
   }  
 }

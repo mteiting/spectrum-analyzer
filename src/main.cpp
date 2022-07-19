@@ -91,8 +91,14 @@ void setup()
   setupServer();
 
   analyzer.setup();
-  Band *band = new Band(0, 0, 20000, 20);
+  Band *band = new Band(0, 0, 20000, 5);
+  Band *band2 = new Band(5, 0, 20000, 5);
+  Band *band3 = new Band(10, 0, 20000, 5);
+  Band *band4 = new Band(15, 0, 20000, 5);
   analyzer.setBand(band);
+  analyzer.setBand(band2);
+  analyzer.setBand(band3);
+  analyzer.setBand(band4);
 }
 
 void loop()
