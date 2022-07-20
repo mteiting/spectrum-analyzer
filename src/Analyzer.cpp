@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "Analyzer.h"
 #include "led.h"
+#include "tools.h"
 
 constexpr uint8_t DEFAULT_BRIGHTNESS = 30;
 constexpr uint32_t DEFAULT_REFRESH_TIME_PEAK_LED = 300; // in ms
@@ -45,16 +46,10 @@ void Analyzer::loop(std::vector<uint8_t> &newLevel)
   if (_ledControl == nullptr)
     return;
 
-  bool bReducePeakLed = false;
-  if ((millis() - _timerPeakLedRefresh) > _u32PeakLedDelay)
-  {
-    bReducePeakLed = true;
-    _timerPeakLedRefresh = millis();
-  }
-
   for (const auto &strip : _bands)
   {
-    strip->updateBandLevel(newLevel.at(strip->getNumber()), bReducePeakLed);
+    strip->updateBandLevel(newLevel.at(strip->getNumber()),
+                           isTimeExpired(_timerPeakLedRefresh, _u32PeakLedDelay));
 
     uint16_t u16NumOfLed = strip->getNumOfLEDs();
     for (uint16_t led = 0; led < u16NumOfLed; led++)
