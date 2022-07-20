@@ -4,7 +4,7 @@
 #include "tools.h"
 
 constexpr uint8_t DEFAULT_BRIGHTNESS = 30;
-constexpr uint32_t DEFAULT_REFRESH_TIME_PEAK_LED = 300; // in ms
+constexpr uint32_t DEFAULT_REFRESH_TIME_PEAK_LED = 20; // in ms
 
 Analyzer::Analyzer(Adafruit_NeoPixel *ledControl) : _ledControl(ledControl),
                                                     _u32PeakLedDelay(DEFAULT_REFRESH_TIME_PEAK_LED),
