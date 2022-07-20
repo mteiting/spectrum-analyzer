@@ -47,14 +47,31 @@ void setup()
 
 void loop()
 {
-  constexpr uint16_t REFRESH_RATE_MS = 1;
-
   static auto offset = millis();
-  if ((millis() - offset) > REFRESH_RATE_MS)
+  static std::vector<uint8_t> currentLevel{
+      static_cast<uint8_t>(rand() % 100),
+      static_cast<uint8_t>(rand() % 100),
+      static_cast<uint8_t>(rand() % 100),
+      static_cast<uint8_t>(rand() % 100),
+      static_cast<uint8_t>(rand() % 100),
+      static_cast<uint8_t>(rand() % 100),
+      static_cast<uint8_t>(rand() % 100)};
+
+
+  if ((millis() - offset) > 50)
   {
-    analyzer.loop(bands_normalized);
+    std::vector<uint8_t> newLevel{
+        static_cast<uint8_t>(rand() % 100),
+        static_cast<uint8_t>(rand() % 100),
+        static_cast<uint8_t>(rand() % 100),
+        static_cast<uint8_t>(rand() % 100),
+        static_cast<uint8_t>(rand() % 100),
+        static_cast<uint8_t>(rand() % 100),
+        static_cast<uint8_t>(rand() % 100)};
+    currentLevel = newLevel;
     offset = millis();
   }
 
+  analyzer.loop(currentLevel);
   WifiTask();
 }

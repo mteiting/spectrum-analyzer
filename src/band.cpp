@@ -3,10 +3,16 @@
 
 #include "band.h"
 
+//#####################################################################
+//                  public
+//#####################################################################
+
 Band::Band(uint8_t u8Number, uint16_t u16OffsetLED, uint16_t u16NumOfLEDs, EnLedCountDir enCountDir) : _u8Number(u8Number),
                                                                                                        _u16NumOfLEDs(u16NumOfLEDs),
                                                                                                        _u16LedOffset(u16OffsetLED),
-                                                                                                       _enCountDir(enCountDir)
+                                                                                                       _enCountDir(enCountDir),
+                                                                                                       _u8Level(0),
+                                                                                                       _u16PeakLED(0)
 {
   for (uint16_t u16CurrentLed; u16CurrentLed < _u16NumOfLEDs; u16CurrentLed++)
     this->_mLedColor.insert(std::pair<uint16_t, TstRGB>(u16CurrentLed, TstRGB()));
@@ -47,9 +53,8 @@ uint8_t Band::getLevel()
   return this->_u8Level;
 }
 
-void Band::updateBandLevel(uint8_t newLevel)
+void Band::updateBandLevel(uint8_t newLevel, bool bReducePeakLed)
 {
-  const TstRGB RGB_AUS = {0, 0, 0};
   // level in %
   _u8Level = newLevel;
   // welche leds muessen eingeschaltet werden
@@ -61,8 +66,10 @@ void Band::updateBandLevel(uint8_t newLevel)
     if (it->first < currentLedLevel)
       getRGB4Level(it->second, it->first);
     else
-      it->second = RGB_AUS;
+      resetLedColor(it->second);
   }
+
+  updatePeakLED(currentLedLevel, bReducePeakLed);
 }
 
 TstRGB &Band::getLedColor(uint16_t u16Number)
@@ -77,7 +84,7 @@ void Band::setLedCountDir(EnLedCountDir enNewDir)
 
 uint16_t Band::getHardwareLedNumber(uint16_t u16CurrentLed)
 {
-  if(u16CurrentLed > this->_u16NumOfLEDs)
+  if (u16CurrentLed > this->_u16NumOfLEDs)
     return 0;
 
   uint16_t u16HwLedNum = 0;
@@ -87,8 +94,34 @@ uint16_t Band::getHardwareLedNumber(uint16_t u16CurrentLed)
     u16HwLedNum = u16CurrentLed;
     break;
   case EnLedCountDir::enLedCountDir_Top:
-    u16HwLedNum = this->_u16NumOfLEDs - u16CurrentLed;
+    u16HwLedNum = this->_u16NumOfLEDs - (u16CurrentLed + 1);
     break;
   }
-  return u16HwLedNum;
+  return u16HwLedNum + _u16LedOffset;
+}
+
+//#####################################################################
+//                  private
+//#####################################################################
+
+/**
+ * @brief berechnet die peak led
+ *
+ * @param u8CurrentLedLevel letzte noch eingeschaltete led des bandes
+ */
+void Band::updatePeakLED(uint8_t u8CurrentLedLevel, bool bReducePeakLed)
+{
+  if (_u16PeakLED <= u8CurrentLedLevel)
+  {
+    _u16PeakLED = u8CurrentLedLevel;
+  }
+  else if (bReducePeakLed) // peak led hoeher als aktuelles level, also langsam runter gehen
+  {
+    resetLedColor(_mLedColor[_u16PeakLED]);
+    _u16PeakLED -= 1;
+  }
+  else
+  {
+  }
+  getPeakLedColor(_mLedColor[_u16PeakLED]);
 }

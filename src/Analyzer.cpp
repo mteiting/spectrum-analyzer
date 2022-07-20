@@ -2,12 +2,15 @@
 #include "Analyzer.h"
 #include "led.h"
 
-constexpr uint8_t DEFAULT_BRIGHTNESS = 10;
+constexpr uint8_t DEFAULT_BRIGHTNESS = 30;
+constexpr uint32_t DEFAULT_REFRESH_TIME_PEAK_LED = 300; //in ms
 
-Analyzer::Analyzer(Adafruit_NeoPixel *ledControl) : _ledControl(ledControl)
+Analyzer::Analyzer(Adafruit_NeoPixel *ledControl) : _ledControl(ledControl),
+                                                    _u32PeakLedDelay(DEFAULT_REFRESH_TIME_PEAK_LED),
+                                                    _timerPeakLedRefresh(millis())
 {
   if (_ledControl == nullptr)
-    Serial.println("ledControl could was not created");
+    Serial.println("was not able to create ledControl");
 }
 
 Analyzer::~Analyzer()
@@ -37,20 +40,27 @@ void Analyzer::setBand(Band *newBand)
   this->_bands.push_back(newBand);
 }
 
-void Analyzer::loop(int *band_amplitudes)
+void Analyzer::loop(std::vector<uint8_t> &newLevel)
 {
   if (_ledControl == nullptr)
     return;
 
+  bool bReducePeakLed = false;
+  if ((millis() - _timerPeakLedRefresh) > _u32PeakLedDelay)
+  {
+    bReducePeakLed = true;
+    _timerPeakLedRefresh = millis();
+  }
+
   for (const auto &strip : _bands)
   {
-    strip->updateBandLevel(band_amplitudes[strip->getNumber()]);
+    strip->updateBandLevel(newLevel.at(strip->getNumber()), bReducePeakLed);
 
     uint16_t u16NumOfLed = strip->getNumOfLEDs();
     for (uint16_t led = 0; led < u16NumOfLed; led++)
     {
       TstRGB rgb = strip->getLedColor(led);
-      uint16_t u16CurrentLED = strip->getHardwareLedNumber(led) + strip->getLedOffset();
+      uint16_t u16CurrentLED = strip->getHardwareLedNumber(led);
       _ledControl->setPixelColor(u16CurrentLED, _ledControl->Color(rgb.red, rgb.green, rgb.blue));
     }
     _ledControl->show();

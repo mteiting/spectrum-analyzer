@@ -7,6 +7,20 @@ void getRandomRGBColor(uint8_t &red, uint8_t &green, uint8_t &blue)
   blue = rand() % 256;
 }
 
+void getPeakLedColor(TstRGB &rgb)
+{
+  rgb.red = 255;
+  rgb.green = 255;
+  rgb.blue = 255;
+} 
+
+void resetLedColor(TstRGB &rgb)
+{
+  const TstRGB RGB_AUS = {0, 0, 0};
+
+  rgb = RGB_AUS;
+}
+
 void getRGB4Level(TstRGB &rgb, uint16_t Level)
 {
   switch (Level)
