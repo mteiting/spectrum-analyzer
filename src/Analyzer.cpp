@@ -3,7 +3,7 @@
 #include "led.h"
 
 constexpr uint8_t DEFAULT_BRIGHTNESS = 30;
-constexpr uint32_t DEFAULT_REFRESH_TIME_PEAK_LED = 300; //in ms
+constexpr uint32_t DEFAULT_REFRESH_TIME_PEAK_LED = 300; // in ms
 
 Analyzer::Analyzer(Adafruit_NeoPixel *ledControl) : _ledControl(ledControl),
                                                     _u32PeakLedDelay(DEFAULT_REFRESH_TIME_PEAK_LED),
@@ -60,8 +60,8 @@ void Analyzer::loop(std::vector<uint8_t> &newLevel)
     for (uint16_t led = 0; led < u16NumOfLed; led++)
     {
       TstRGB rgb = strip->getLedColor(led);
-      uint16_t u16CurrentLED = strip->getHardwareLedNumber(led);
-      _ledControl->setPixelColor(u16CurrentLED, _ledControl->Color(rgb.red, rgb.green, rgb.blue));
+      _ledControl->setPixelColor(strip->getHardwareLedNumber(led),
+                                 _ledControl->Color(rgb.red, rgb.green, rgb.blue));
     }
     _ledControl->show();
   }
