@@ -3,11 +3,11 @@
 
 bool isTimeExpired(uint32_t &u32StartTime, uint32_t &u32TimeDuration)
 {
-  bool bReducePeakLed = false;
+  bool bExpired = false;
   if ((millis() - u32StartTime) > u32TimeDuration)
   {
-    bReducePeakLed = true;
+    bExpired = true;
     u32StartTime = millis();
   }
-  return bReducePeakLed;
+  return bExpired;
 }
