@@ -54,7 +54,7 @@ uint8_t Band::getLevel()
   return this->_u8Level;
 }
 
-void Band::updateBandLevel(uint8_t newLevel, uint32_t &tPeakLedTimer)
+void Band::updateBandLevel(uint8_t newLevel, bool bUpdatePeakLED)
 {
   // level in %
   _u8Level = newLevel;
@@ -70,7 +70,7 @@ void Band::updateBandLevel(uint8_t newLevel, uint32_t &tPeakLedTimer)
       resetLedColor(it->second);
   }
 
-  updatePeakLED(currentLedLevel, tPeakLedTimer);
+  updatePeakLED(currentLedLevel, bUpdatePeakLED);
 }
 
 TstRGB &Band::getLedColor(uint16_t u16Number)
@@ -110,14 +110,13 @@ uint16_t Band::getHardwareLedNumber(uint16_t u16CurrentLed)
  *
  * @param u8CurrentLedLevel letzte noch eingeschaltete led des bandes
  */
-void Band::updatePeakLED(uint8_t u8CurrentLedLevel, uint32_t &tPeakLedTimer)
+void Band::updatePeakLED(uint8_t u8CurrentLedLevel, bool bUpdatePeakLED)
 {
   if (_u16PeakLED <= u8CurrentLedLevel)
   {
     _u16PeakLED = u8CurrentLedLevel;
-    tPeakLedTimer = millis();
   }
-  else if (isTimeExpired(tPeakLedTimer, getHtmlValues().u8PeakLedDelay)) // peak led hoeher als aktuelles level, also langsam runter gehen
+  else if (bUpdatePeakLED) // peak led hoeher als aktuelles level, also langsam runter gehen
   {
     resetLedColor(_mLedColor[_u16PeakLED]);
     if(_u16PeakLED)

@@ -113,7 +113,7 @@ void loop()
   size_t bytesRead = 0;
   uint16_t i2s_read_buff[SAMPLE_SIZE];
   system_event_t evt;
-  /*
+  
   if (xQueueReceive(i2s_event_queue, &evt, portMAX_DELAY) == pdPASS)
   {
     if (evt.event_id == 2)
@@ -138,7 +138,7 @@ void loop()
       continue;
     }
     createBands(i, static_cast<uint32_t>(vReal[i]));
-  }*/
+  }
 
   static auto start = millis();
   static bool toggle = false;
@@ -150,25 +150,15 @@ void loop()
 
   for (int i = 0; i < BANDS; i++)
   {
-    // std::clamp()
     // Serial.printf("%d : %4d\t", i, bands[i]);
-    //uint8_t value = static_cast<uint8_t>((bands[i] * 100) / 300000);
-    //if (value > 100)
-    //{
-    //  value = 100;
-   // }
-    normalized_bands[i] = 50*toggle;
-    //Serial.println(normalized_bands[i]);
-    //normalized_bands[i] = std::rand() % 100;
+    uint8_t value = static_cast<uint8_t>((bands[i] * 100) / 300000);
+    if (value > 100)
+    {
+     value = 100;
+   }
+    normalized_bands[i] = value;
   }
-
-  //Serial.printf("duration fft: %8d\n", micros() - start);
-  
   
   analyzer.loop(normalized_bands);
-  //Serial.printf("duration analyzer: %8d\n", micros() - start);
-  
-  
-
   WifiTask();
 }
