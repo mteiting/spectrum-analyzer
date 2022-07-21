@@ -1,7 +1,7 @@
 #include <Arduino.h>
+#include <string.h>
 #include <WiFi.h>
 #include <WiFiClient.h>
-#include <WebServer.h>
 #include "AsyncTCP.h"
 #include <ESPAsyncWebServer.h>
 #include "analyzerWiFi.h"
@@ -12,8 +12,7 @@ const char *password = "1234567890";
 
 static AsyncWebServer server(80);
 static StHtmlValues mglHtmlValues = {};
-const char *HtmlInput_Brightness = "input_brightness";
-const char *HtmlInput_PeakLedDelay = "input_peakleddelay";
+static std::string mglsWifiList = "";
 
 static void scanForWifiNetworks()
 {
@@ -22,18 +21,13 @@ static void scanForWifiNetworks()
 
   uint16_t u16NumOfWifiNetworks = WiFi.scanNetworks();
   Serial.println(u16NumOfWifiNetworks);
-  for (int i = 0; i < u16NumOfWifiNetworks; ++i)
+  for (uint8_t u8CurrentWifi = 0; u8CurrentWifi < u16NumOfWifiNetworks; u8CurrentWifi++)
   {
-    // Print SSID and RSSI for each network found
-    Serial.print(i + 1);
-    Serial.print(": ");
-    Serial.print(WiFi.SSID(i));
-    Serial.print(" (");
-    Serial.print(WiFi.RSSI(i));
-    Serial.print(")");
-    Serial.println((WiFi.encryptionType(i) == WIFI_AUTH_OPEN) ? " " : "*");
-    delay(10);
+    std::string newWifi = std::string(WiFi.SSID(u8CurrentWifi).c_str());
+    mglsWifiList.append(newWifi);
+    mglsWifiList += "##";
   }
+  Serial.println(mglsWifiList.c_str());
 }
 
 static void notFound(AsyncWebServerRequest *request)
@@ -69,6 +63,14 @@ static void setupServer()
             mglHtmlValues.bScanForWifi = true;
             request->send(200, "text/html", index_html); 
             request->redirect("/"); });
+
+  server.on("/get_wifi", HTTP_GET, [](AsyncWebServerRequest *request)
+            { 
+            if(mglsWifiList.empty())
+              return;
+            Serial.println("sending wifi");
+            request->send(200, "text/plain", mglsWifiList.c_str()); 
+            mglsWifiList.erase(); });
 
   server.onNotFound(notFound);
   server.begin();
