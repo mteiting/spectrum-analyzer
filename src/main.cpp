@@ -1,5 +1,4 @@
 #include <Arduino.h>
-// #include <Wire.h>
 #include <SparkFun_ADS1015_Arduino_Library.h>
 #include <arduinoFFT.h>
 #include <sstream>
@@ -9,9 +8,12 @@
 #include "led.h"
 #include "band.h"
 #include "analyzerWiFi.h"
+#include "driver/i2s.h"
+#include "esp_event.h"
 
-#define SAMPLE_SIZE 512
-#define SAMPLE_FREQUENCY 44100
+
+#define SAMPLE_SIZE 512ul
+#define SAMPLE_FREQUENCY 44000ul
 #define BANDS 7
 #define AMPLITUDE 1
 
@@ -21,25 +23,17 @@ double vReal[SAMPLE_SIZE];
 double vImag[SAMPLE_SIZE];
 double maxvalue = 0;
 arduinoFFT FFT = arduinoFFT();
+QueueHandle_t i2s_event_queue;
 
-int bands[] = {0, 0, 0, 0, 0, 0, 0};
+uint32_t bands[] = {0, 0, 0, 0, 0, 0, 0};
 int bands_normalized[] = {0, 0, 0, 0, 0, 0, 0};
 
 bool bMicInitialized;
 
-// void cont_adc_init()
-// {
-  
-//   adc_digi_configuration_t cfg = {
-//     .conv_limit_num = 512,
-//     .sample_freq_hz = 44100,
-//     .conv_mode = ADC_CONV_SINGLE_UNIT_1,
-//     .format = ADC_DIGI_OUTPUT_FORMAT_TYPE1,
-//   };
+i2s_config_t i2s_config;
 
-// }
 
-int get_frequency(int i)
+uint32_t get_frequency(int i)
 {
   if (i < 2)
   {
@@ -48,32 +42,32 @@ int get_frequency(int i)
   return ((i - 2) * SAMPLE_FREQUENCY) / SAMPLE_SIZE;
 }
 
-void createBands(int i, int amplitude)
+void createBands(int i, uint32_t amplitude)
 {
-  //int frequency = get_frequency(i);
+  uint32_t frequency = get_frequency(i);
   uint8_t band = 0;
 
-  if (i <= 4) // 63 Hz
+  if (frequency <= 63) // (i <= 4) // 63 Hz
   {
     band = 0;
   }
-  else if (i <= 6) // 160 Hz
+  else if (frequency <= 160) //(i <= 6) // 160 Hz
   {
     band = 1;
   }
-  else if (i <= 7) // 400 Hz
+  else if (frequency <= 400) //(i <= 7) // 400 Hz
   {
     band = 2;
   }
-  else if (i <= 15) // 1 kHz
+  else if (frequency <= 1000) //(i <= 15) // 1 kHz
   {
     band = 3;
   }
-  else if (i <= 32) // 2500 kHz
+  else if (frequency <= 2500) //(i <= 32) // 2500 kHz
   {
     band = 4;
   }
-  else if (i <= 75) // 6250 kHz
+  else if (frequency <= 6250) // (i <= 75) // 6250 kHz
   {
     band = 5;
   }
@@ -111,7 +105,7 @@ void createBands(int i, int amplitude)
   //   band = 6;
   // }
 
-  bands[band] = amplitude;
+  bands[band] = std::max(bands[band], amplitude);
 }
 
 // Declare our NeoPixel strip object:
@@ -130,6 +124,22 @@ void setup()
 {
   Serial.begin(115200);
 
+  i2s_config.mode =  i2s_mode_t(I2S_MODE_MASTER | I2S_MODE_RX | I2S_MODE_ADC_BUILT_IN);
+  i2s_config.sample_rate = SAMPLE_FREQUENCY;                           // 120 KHz
+  i2s_config.dma_buf_len = SAMPLE_SIZE;                           // 512
+  i2s_config.channel_format = I2S_CHANNEL_FMT_ONLY_RIGHT;         // Should be mono but doesn't seem to be
+  i2s_config.bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT;
+  i2s_config.use_apll = false,
+  i2s_config.communication_format = I2S_COMM_FORMAT_STAND_I2S;
+  i2s_config.intr_alloc_flags = ESP_INTR_FLAG_LEVEL1;
+  i2s_config.dma_buf_count = 2;
+  //install and start i2s driver
+  i2s_driver_install(I2S_NUM_0, &i2s_config, 1, &i2s_event_queue);
+  // Connect ADC to I2S
+  i2s_set_adc_mode(ADC_UNIT_1, ADC1_CHANNEL_6);
+  i2s_adc_enable(I2S_NUM_0);
+
+
   // Wire.begin(-1, -1, 1000000UL);
 
   // bMicInitialized = microphone.begin();
@@ -142,23 +152,23 @@ void setup()
   //   Serial.println("No device found.");
   // }
 
-  // setupWifi();
+  setupWifi();
 
-  // analyzer.setup();
-  // Band *band = new Band(0, 0, 20, EnLedCountDir::enLedCountDir_Top);
-  // Band *band2 = new Band(1, 20, 20, EnLedCountDir::enLedCountDir_Down);
-  // Band *band3 = new Band(2, 40, 20, EnLedCountDir::enLedCountDir_Top);
-  // Band *band4 = new Band(3, 60, 20, EnLedCountDir::enLedCountDir_Down);
-  // Band *band5 = new Band(4, 80, 20, EnLedCountDir::enLedCountDir_Top);
-  // Band *band6 = new Band(5, 100, 20, EnLedCountDir::enLedCountDir_Down);
-  // Band *band7 = new Band(6, 120, 20, EnLedCountDir::enLedCountDir_Top);
-  // analyzer.setBand(band);
-  // analyzer.setBand(band2);
-  // analyzer.setBand(band3);
-  // analyzer.setBand(band4);
-  // analyzer.setBand(band5);
-  // analyzer.setBand(band6);
-  // analyzer.setBand(band7);
+  analyzer.setup();
+  Band *band = new Band(0, 0, 20, EnLedCountDir::enLedCountDir_Top);
+  Band *band2 = new Band(1, 20, 20, EnLedCountDir::enLedCountDir_Down);
+  Band *band3 = new Band(2, 40, 20, EnLedCountDir::enLedCountDir_Top);
+  Band *band4 = new Band(3, 60, 20, EnLedCountDir::enLedCountDir_Down);
+  Band *band5 = new Band(4, 80, 20, EnLedCountDir::enLedCountDir_Top);
+  Band *band6 = new Band(5, 100, 20, EnLedCountDir::enLedCountDir_Down);
+  Band *band7 = new Band(6, 120, 20, EnLedCountDir::enLedCountDir_Top);
+  analyzer.setBand(band);
+  analyzer.setBand(band2);
+  analyzer.setBand(band3);
+  analyzer.setBand(band4);
+  analyzer.setBand(band5);
+  analyzer.setBand(band6);
+  analyzer.setBand(band7);
 
   
 }
@@ -172,55 +182,47 @@ void loop()
   //   delay(1000);
   // }
 
-  for (int i = 0; i < SAMPLE_SIZE; i++)
+  size_t bytesRead = 0;
+  uint16_t i2s_read_buff[SAMPLE_SIZE];
+  system_event_t evt;
+  if (xQueueReceive(i2s_event_queue, &evt, portMAX_DELAY) == pdPASS)
   {
-    //vReal[i] = 4096 * cos(PI*2 * i * 1000/SAMPLE_FREQUENCY);    
-    vReal[i] = static_cast<int16_t>(analogRead(32));//microphone.getSingleEnded(2);
-    vImag[i] = 0.0;
-
-    uint32_t start = micros();    
-    while ((micros() - start) <= 6)
+    if (evt.event_id == 2)
     {
-      
+      i2s_read(I2S_NUM_0, (char *)i2s_read_buff, SAMPLE_SIZE * 2, &bytesRead, portMAX_DELAY);
+      for (int i = 0; i < SAMPLE_SIZE; i++)
+      {
+        vReal[i] = static_cast<double>(i2s_read_buff[i] & 0xfff); 
+        vImag[i] = 0.0;
+      }
     }
-    
   }
 
   FFT.Windowing(vReal, SAMPLE_SIZE, FFT_WIN_TYP_HAMMING, FFT_FORWARD);
   FFT.Compute(vReal, vImag, SAMPLE_SIZE, FFT_FORWARD);
   FFT.ComplexToMagnitude(vReal, vImag, SAMPLE_SIZE);
 
-
-  for (int i = 0; i < (SAMPLE_SIZE >> 1); i++)
-  {
-    double freq = (i * 1.0 * SAMPLE_FREQUENCY) / SAMPLE_SIZE;
-    //Serial.printf("%4.2fHz : %4.2f\n", freq, vReal[i]);
-  }
+  // for (int i = 2; i < (SAMPLE_SIZE >> 1); i++)
+  // {
+  //   double freq = (i * 1.0 * SAMPLE_FREQUENCY) / SAMPLE_SIZE;
+  //   Serial.printf("%4.2fHz : %4.2f\n", freq, vReal[i]);
+  // }  
   
-  int k = 0;
   memset(bands, 0, sizeof(int) * 7);
   for (int i = 2; i < (SAMPLE_SIZE >> 1); i++)
   {
-    if (vReal[i] < 1000.0) {
+    if (vReal[i] < 2000.0) {
       continue;
     }
-    createBands(i, static_cast<int32_t>(vReal[i]));
+    createBands(i, static_cast<uint32_t>(vReal[i]));
   }
 
   for (int i = 0; i < BANDS; i++)
   {
     Serial.printf("%d : %4d\t", i, bands[i]);
+    bands_normalized[i] = (bands[i] * 100) / 300000;
   }
   Serial.println();
 
-  // constexpr uint16_t REFRESH_RATE_MS = 200;
-
-  // static auto offset = millis();
-  // if ((millis() - offset) > REFRESH_RATE_MS)
-  // {
-  //   analyzer.loop(bands_normalized);
-  //   offset = millis();
-  // }
-
-  // WifiTask();
+  analyzer.loop(bands_normalized);
 }
