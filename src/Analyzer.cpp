@@ -56,18 +56,15 @@ void Analyzer::loop(std::vector<uint8_t> &newLevel)
   _ledControl->setBrightness(getHtmlValues().u8Brightness);
   for (const auto &strip : _bands)
   {
-    Serial.printf("band %u    ",strip->getNumber());
     strip->updateBandLevel(newLevel.at(strip->getNumber()), bUpdatePeakLEDs);
 
     uint16_t u16NumOfLed = strip->getNumOfLEDs();
     for (uint16_t led = 0; led < u16NumOfLed; led++)
     {
       TstRGB rgb = strip->getLedColor(led);
-      Serial.printf("led %u  red %u green %u blue %u \n",led,rgb.red, rgb.green, rgb.blue);
       _ledControl->setPixelColor(strip->getHardwareLedNumber(led),
                                  _ledControl->Color(rgb.red, rgb.green, rgb.blue));
     }
   }
-
   _ledControl->show();
 }
