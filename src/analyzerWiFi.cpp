@@ -2,39 +2,22 @@
 #include <WiFi.h>
 #include <WiFiClient.h>
 #include <WebServer.h>
+#include "AsyncTCP.h"
+#include <ESPAsyncWebServer.h>
 #include "analyzerWiFi.h"
+#include "html.h"
 
 const char *ssid = "SpectrumAnalyzer";
 const char *password = "1234567890";
 
-static WiFiServer server(80);
+static AsyncWebServer server(80);
+static StHtmlValues mglHtmlValues = {};
+const char *HtmlInput_Brightness = "input_brightness";
+const char *HtmlInput_PeakLedDelay = "input_peakleddelay";
 
-static void getHTMLPage(WiFiClient &currentClient)
+static void notFound(AsyncWebServerRequest *request)
 {
-  Serial.println("Add Client");
-  // clients.insert(std::make_pair(currentClient.localIP(), &currentClient));
-
-  currentClient.println("HTTP/1.1 200 OK");
-  currentClient.println("Content-type:text/html");
-  currentClient.println("Connection: close");
-  currentClient.println();
-  // HTML content
-  currentClient.println("<!DOCTYPE html><html>");
-  currentClient.println("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
-  currentClient.println("<link rel=\"icon\" href=\"data:,\">");
-  // web page heading inside browser
-  currentClient.println("<title>spectrum analyzer</title></head><body>");
-  // topic
-  currentClient.println("<h1>Spectrum Analyzer</h1>");
-  // Scan Button
-  currentClient.println("<style>html { font-family: Helvetica; display: inline-block; margin: 0px auto; text-align: center;}");
-  currentClient.println(".button { background-color: #4CAF50; border: none; color: white; padding: 16px 40px;");
-  currentClient.println("text-decoration: none; font-size: 30px; margin: 2px; cursor: pointer;}");
-  currentClient.println("</style></head>");
-  currentClient.println("<p><a <button class=\"button\">SCAN</button></a></p>");
-  // end of HTML page
-  currentClient.println("</body></html>");
-  currentClient.println();
+  request->send(404, "text/plain", "Not found");
 }
 
 static void setupServer()
@@ -42,6 +25,25 @@ static void setupServer()
   IPAddress IP = WiFi.softAPIP();
   Serial.print("AP IP address: ");
   Serial.println(IP);
+
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send_P(200, "text/html", index_html); });
+
+  server.on("/get", HTTP_GET, [](AsyncWebServerRequest *request)
+            {
+    if (request->hasParam(HtmlInput_Brightness)) {
+      mglHtmlValues.u8Brightness = request->getParam(HtmlInput_Brightness)->value().toInt();
+    }
+    else if (request->hasParam(HtmlInput_PeakLedDelay)) {
+      mglHtmlValues.u8PeakLedDelay = request->getParam(HtmlInput_PeakLedDelay)->value().toInt();
+    }
+    else {
+    }
+    // request->send(200, "text/html", "<br><a href=\"/\">Return to Home Page</a>"); 
+    request->send(200, "text/html", index_html); 
+    request->redirect("/"); });
+
+  server.onNotFound(notFound);
   server.begin();
 }
 
@@ -62,24 +64,18 @@ String getSSID()
   return stSsidWithMac;
 }
 
+StHtmlValues &getHtmlValues()
+{
+  return mglHtmlValues;
+}
+
+void setHtmlValues(StHtmlValues &newHtmlValues)
+{
+  mglHtmlValues = newHtmlValues;
+}
+
 void setupWifi()
 {
   setupAccessPoint();
   setupServer();
-}
-
-void WifiTask()
-{
-  WiFiClient client = server.available();
-  if (!client)
-    return;
-
-  if (client.available())
-  {
-    getHTMLPage(client);
-  }
-  else
-  {
-    client.stop();
-  }
 }
