@@ -1,40 +1,45 @@
 #include <Arduino.h>
+#include <string.h>
 #include <WiFi.h>
 #include <WiFiClient.h>
-#include <WebServer.h>
+#include "AsyncTCP.h"
+#include <ESPAsyncWebServer.h>
 #include "analyzerWiFi.h"
+#include "html.h"
 
 const char *ssid = "SpectrumAnalyzer";
 const char *password = "1234567890";
 
-static WiFiServer server(80);
+static AsyncWebServer server(80);
+static StHtmlValues mglHtmlValues = {};
+static std::string mglsWifiList = "";
 
-static void getHTMLPage(WiFiClient &currentClient)
+static void scanForWifiNetworks()
 {
-  Serial.println("Add Client");
-  // clients.insert(std::make_pair(currentClient.localIP(), &currentClient));
+  Serial.println("Scanning...");
+  mglHtmlValues.bScanForWifi = false;
 
-  currentClient.println("HTTP/1.1 200 OK");
-  currentClient.println("Content-type:text/html");
-  currentClient.println("Connection: close");
-  currentClient.println();
-  // HTML content
-  currentClient.println("<!DOCTYPE html><html>");
-  currentClient.println("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
-  currentClient.println("<link rel=\"icon\" href=\"data:,\">");
-  // web page heading inside browser
-  currentClient.println("<title>spectrum analyzer</title></head><body>");
-  // topic
-  currentClient.println("<h1>Spectrum Analyzer</h1>");
-  // Scan Button
-  currentClient.println("<style>html { font-family: Helvetica; display: inline-block; margin: 0px auto; text-align: center;}");
-  currentClient.println(".button { background-color: #4CAF50; border: none; color: white; padding: 16px 40px;");
-  currentClient.println("text-decoration: none; font-size: 30px; margin: 2px; cursor: pointer;}");
-  currentClient.println("</style></head>");
-  currentClient.println("<p><a <button class=\"button\">SCAN</button></a></p>");
-  // end of HTML page
-  currentClient.println("</body></html>");
-  currentClient.println();
+  uint16_t u16NumOfWifiNetworks = WiFi.scanNetworks();
+  Serial.println(u16NumOfWifiNetworks);
+  for (uint8_t u8CurrentWifi = 0; u8CurrentWifi < u16NumOfWifiNetworks; u8CurrentWifi++)
+  {
+    std::string newWifi = std::string(WiFi.SSID(u8CurrentWifi).c_str());
+    mglsWifiList.append(newWifi);
+    mglsWifiList += "##";
+  }
+  Serial.println(mglsWifiList.c_str());
+}
+
+static void notFound(AsyncWebServerRequest *request)
+{
+  request->send(404, "text/plain", "Not found");
+}
+
+static String sliderBrightnessValue(const String &var)
+{
+  if (var.equals(HtmlInput_Brightness))
+    return String(mglHtmlValues.u8Brightness);
+  return String();
 }
 
 static void setupServer()
@@ -42,13 +47,50 @@ static void setupServer()
   IPAddress IP = WiFi.softAPIP();
   Serial.print("AP IP address: ");
   Serial.println(IP);
+
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send_P(200, "text/html", index_html); });
+
+  server.on("/get_peakDelay", HTTP_GET, [](AsyncWebServerRequest *request)
+            {
+            if (request->hasParam(PARAM_INPUT)){
+              mglHtmlValues.u8PeakLedDelay = request->getParam(PARAM_INPUT)->value().toInt();
+            }
+            request->send(200, "text/html", index_html); 
+            request->redirect("/"); });
+
+  server.on("/scan_wifi", HTTP_GET, [](AsyncWebServerRequest *request)
+            { 
+            mglHtmlValues.bScanForWifi = true;
+            request->send(200, "text/html", index_html); 
+            request->redirect("/"); });
+
+  server.on("/get_wifi", HTTP_GET, [](AsyncWebServerRequest *request)
+            { 
+            if(mglsWifiList.empty())
+              return;
+            request->send(200, "text/plain", mglsWifiList.c_str()); 
+            mglsWifiList.erase(); });
+
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send_P(200, "text/html", index_html, sliderBrightnessValue); });
+
+  server.on("/slider", HTTP_GET, [](AsyncWebServerRequest *request)
+            {
+            if (request->hasParam(PARAM_INPUT)) {
+              String sliderValue = request->getParam(PARAM_INPUT)->value();
+              mglHtmlValues.u8Brightness = sliderValue.toInt();
+            }
+            request->send(200, "text/plain", "OK"); });
+
+  server.onNotFound(notFound);
   server.begin();
 }
 
 static void setupAccessPoint()
 {
   Serial.println("init AP ...");
-  WiFi.mode(WIFI_AP);
+  WiFi.mode(WIFI_AP_STA);
   if (true == WiFi.softAP(getSSID().c_str(), password))
     Serial.println("AP is up");
 }
@@ -62,6 +104,16 @@ String getSSID()
   return stSsidWithMac;
 }
 
+StHtmlValues &getHtmlValues()
+{
+  return mglHtmlValues;
+}
+
+void setHtmlValues(StHtmlValues &newHtmlValues)
+{
+  mglHtmlValues = newHtmlValues;
+}
+
 void setupWifi()
 {
   setupAccessPoint();
@@ -70,16 +122,6 @@ void setupWifi()
 
 void WifiTask()
 {
-  WiFiClient client = server.available();
-  if (!client)
-    return;
-
-  if (client.available())
-  {
-    getHTMLPage(client);
-  }
-  else
-  {
-    client.stop();
-  }
+  if (mglHtmlValues.bScanForWifi)
+    scanForWifiNetworks();
 }

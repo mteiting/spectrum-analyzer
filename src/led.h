@@ -15,3 +15,5 @@ struct TstRGB
 
 void getRandomRGBColor(uint8_t &red, uint8_t &green, uint8_t &blue);
 void getRGB4Level(TstRGB &rgb, uint16_t Level);
+void getPeakLedColor(TstRGB &rgb);
+void resetLedColor(TstRGB &rgb);

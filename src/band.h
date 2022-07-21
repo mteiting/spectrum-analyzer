@@ -2,7 +2,8 @@
 #include <map>
 #include "led.h"
 
-enum class EnLedCountDir{
+enum class EnLedCountDir
+{
   enLedCountDir_Top = 0,
   enLedCountDir_Down
 };
@@ -13,9 +14,12 @@ private:
   std::map<uint16_t, TstRGB> _mLedColor;
   uint16_t _u16NumOfLEDs;
   uint16_t _u16LedOffset;
+  uint16_t _u16PeakLED;
   uint8_t _u8Number;
-  uint8_t _u8Level;       // in %
+  uint8_t _u8Level; // in %
   EnLedCountDir _enCountDir;
+
+  void updatePeakLED(uint8_t u8CurrentLedLevel, uint32_t &tPeakLedTimer);
 
 public:
   Band(){};
@@ -32,9 +36,9 @@ public:
   void setNumber(uint8_t newNumber);
 
   uint8_t getLevel();
-  void updateBandLevel(uint8_t newLevel);
+  void updateBandLevel(uint8_t newLevel, uint32_t &tPeakLedTimer);
 
-  TstRGB& getLedColor(uint16_t u16Led);
+  TstRGB &getLedColor(uint16_t u16Led);
   void setLedCountDir(EnLedCountDir enNewDir);
   uint16_t getHardwareLedNumber(uint16_t u16CurrentLed);
 };

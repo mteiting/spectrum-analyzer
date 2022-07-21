@@ -1,7 +1,5 @@
 #include <Arduino.h>
-#include <SparkFun_ADS1015_Arduino_Library.h>
 #include <arduinoFFT.h>
-#include <sstream>
 #include <algorithm>
 #include "Adafruit_NeoPixel.h"
 #include "Analyzer.h"
@@ -11,27 +9,21 @@
 #include "driver/i2s.h"
 #include "esp_event.h"
 
-
 #define SAMPLE_SIZE 512ul
 #define SAMPLE_FREQUENCY 44000ul
 #define BANDS 7
-#define AMPLITUDE 1
-
-ADS1015 microphone;
 
 double vReal[SAMPLE_SIZE];
 double vImag[SAMPLE_SIZE];
-double maxvalue = 0;
 arduinoFFT FFT = arduinoFFT();
 QueueHandle_t i2s_event_queue;
 
 uint32_t bands[] = {0, 0, 0, 0, 0, 0, 0};
-int bands_normalized[] = {0, 0, 0, 0, 0, 0, 0};
+std::vector<uint8_t> normalized_bands(7, 0);
 
-bool bMicInitialized;
-
+static Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
+static Analyzer analyzer(&strip);
 i2s_config_t i2s_config;
-
 
 uint32_t get_frequency(int i)
 {
@@ -47,27 +39,27 @@ void createBands(int i, uint32_t amplitude)
   uint32_t frequency = get_frequency(i);
   uint8_t band = 0;
 
-  if (frequency <= 63) // (i <= 4) // 63 Hz
+  if (frequency <= 63)
   {
     band = 0;
   }
-  else if (frequency <= 160) //(i <= 6) // 160 Hz
+  else if (frequency <= 160)
   {
     band = 1;
   }
-  else if (frequency <= 400) //(i <= 7) // 400 Hz
+  else if (frequency <= 400)
   {
     band = 2;
   }
-  else if (frequency <= 1000) //(i <= 15) // 1 kHz
+  else if (frequency <= 1000)
   {
     band = 3;
   }
-  else if (frequency <= 2500) //(i <= 32) // 2500 kHz
+  else if (frequency <= 2500)
   {
     band = 4;
   }
-  else if (frequency <= 6250) // (i <= 75) // 6250 kHz
+  else if (frequency <= 6250)
   {
     band = 5;
   }
@@ -75,50 +67,8 @@ void createBands(int i, uint32_t amplitude)
   {
     band = 6;
   }
-  
-  // if (frequency <= 125)
-  // {
-  //   band = 0;
-  // }
-  // else if (frequency <= 250)
-  // {
-  //   band = 1;
-  // }
-  // else if (frequency <= 500)
-  // {
-  //   band = 2;
-  // }
-  // else if (frequency <= 1000)
-  // {
-  //   band = 3;
-  // }
-  // else if (frequency <= 2000)
-  // {
-  //   band = 4;
-  // }
-  // else if (frequency <= 4000)
-  // {
-  //   band = 5;
-  // }
-  // else
-  // {
-  //   band = 6;
-  // }
-
   bands[band] = std::max(bands[band], amplitude);
 }
-
-// Declare our NeoPixel strip object:
-static Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
-// Argument 1 = Number of pixels in NeoPixel strip
-// Argument 2 = Arduino pin number (most are valid)
-// Argument 3 = Pixel type flags, add together as needed:
-//   NEO_KHZ800  800 KHz bitstream (most NeoPixel products w/WS2812 LEDs)
-//   NEO_KHZ400  400 KHz (classic 'v1' (not v2) FLORA pixels, WS2811 drivers)
-//   NEO_GRB     Pixels are wired for GRB bitstream (most NeoPixel products)
-//   NEO_RGB     Pixels are wired for RGB bitstream (v1 FLORA pixels, not v2)
-//   NEO_RGBW    Pixels are wired for RGBW bitstream (NeoPixel RGBW products)
-static Analyzer analyzer(&strip);
 
 void setup()
 {
@@ -139,19 +89,6 @@ void setup()
   i2s_set_adc_mode(ADC_UNIT_1, ADC1_CHANNEL_6);
   i2s_adc_enable(I2S_NUM_0);
 
-
-  // Wire.begin(-1, -1, 1000000UL);
-
-  // bMicInitialized = microphone.begin();
-  // if (bMicInitialized)
-  // {
-  //   Serial.println("Microphone found, I2C connected");
-  // }
-  // else
-  // {
-  //   Serial.println("No device found.");
-  // }
-
   setupWifi();
 
   analyzer.setup();
@@ -169,22 +106,14 @@ void setup()
   analyzer.setBand(band5);
   analyzer.setBand(band6);
   analyzer.setBand(band7);
-
-  
 }
 
 void loop()
 {
-  //Serial.println(analogRead(4));
-  // if (!bMicInitialized)
-  // {
-  //   Serial.println("Mic not initialized...");
-  //   delay(1000);
-  // }
-
   size_t bytesRead = 0;
   uint16_t i2s_read_buff[SAMPLE_SIZE];
   system_event_t evt;
+  /*
   if (xQueueReceive(i2s_event_queue, &evt, portMAX_DELAY) == pdPASS)
   {
     if (evt.event_id == 2)
@@ -201,12 +130,6 @@ void loop()
   FFT.Windowing(vReal, SAMPLE_SIZE, FFT_WIN_TYP_HAMMING, FFT_FORWARD);
   FFT.Compute(vReal, vImag, SAMPLE_SIZE, FFT_FORWARD);
   FFT.ComplexToMagnitude(vReal, vImag, SAMPLE_SIZE);
-
-  // for (int i = 2; i < (SAMPLE_SIZE >> 1); i++)
-  // {
-  //   double freq = (i * 1.0 * SAMPLE_FREQUENCY) / SAMPLE_SIZE;
-  //   Serial.printf("%4.2fHz : %4.2f\n", freq, vReal[i]);
-  // }  
   
   memset(bands, 0, sizeof(int) * 7);
   for (int i = 2; i < (SAMPLE_SIZE >> 1); i++)
@@ -215,14 +138,37 @@ void loop()
       continue;
     }
     createBands(i, static_cast<uint32_t>(vReal[i]));
+  }*/
+
+  static auto start = millis();
+  static bool toggle = false;
+  if( (millis()-start) > 2000){
+    toggle = !toggle;
+    start = millis();
   }
+    
 
   for (int i = 0; i < BANDS; i++)
   {
-    Serial.printf("%d : %4d\t", i, bands[i]);
-    bands_normalized[i] = (bands[i] * 100) / 300000;
+    // std::clamp()
+    // Serial.printf("%d : %4d\t", i, bands[i]);
+    //uint8_t value = static_cast<uint8_t>((bands[i] * 100) / 300000);
+    //if (value > 100)
+    //{
+    //  value = 100;
+   // }
+    normalized_bands[i] = 50*toggle;
+    //Serial.println(normalized_bands[i]);
+    //normalized_bands[i] = std::rand() % 100;
   }
-  Serial.println();
 
-  analyzer.loop(bands_normalized);
+  //Serial.printf("duration fft: %8d\n", micros() - start);
+  
+  
+  analyzer.loop(normalized_bands);
+  //Serial.printf("duration analyzer: %8d\n", micros() - start);
+  
+  
+
+  WifiTask();
 }
