@@ -10,9 +10,10 @@
 #include "band.h"
 #include "analyzerWiFi.h"
 
-#define SAMPLE_SIZE 128
-#define SAMPLE_FREQUENCY 16000
+#define SAMPLE_SIZE 512
+#define SAMPLE_FREQUENCY 44100
 #define BANDS 7
+#define AMPLITUDE 1
 
 ADS1015 microphone;
 
@@ -26,56 +27,91 @@ int bands_normalized[] = {0, 0, 0, 0, 0, 0, 0};
 
 bool bMicInitialized;
 
+// void cont_adc_init()
+// {
+  
+//   adc_digi_configuration_t cfg = {
+//     .conv_limit_num = 512,
+//     .sample_freq_hz = 44100,
+//     .conv_mode = ADC_CONV_SINGLE_UNIT_1,
+//     .format = ADC_DIGI_OUTPUT_FORMAT_TYPE1,
+//   };
+
+// }
+
 int get_frequency(int i)
 {
   if (i < 2)
   {
     return 0;
   }
-  return (i - 2) * (SAMPLE_FREQUENCY * 2 / SAMPLE_SIZE);
+  return ((i - 2) * SAMPLE_FREQUENCY) / SAMPLE_SIZE;
 }
 
 void createBands(int i, int amplitude)
 {
-  int frequency = get_frequency(i);
+  //int frequency = get_frequency(i);
   uint8_t band = 0;
 
-  if (frequency <= 125)
+  if (i <= 4) // 63 Hz
   {
     band = 0;
   }
-  else if (frequency <= 250)
+  else if (i <= 6) // 160 Hz
   {
     band = 1;
   }
-  else if (frequency <= 500)
+  else if (i <= 7) // 400 Hz
   {
     band = 2;
   }
-  else if (frequency <= 1000)
+  else if (i <= 15) // 1 kHz
   {
     band = 3;
   }
-  else if (frequency <= 2000)
+  else if (i <= 32) // 2500 kHz
   {
     band = 4;
   }
-  else if (frequency <= 4000)
+  else if (i <= 75) // 6250 kHz
   {
     band = 5;
   }
-  else if (frequency <= 8000)
+  else
   {
     band = 6;
   }
-  else
-  {
-    band = 7;
-  }
+  
+  // if (frequency <= 125)
+  // {
+  //   band = 0;
+  // }
+  // else if (frequency <= 250)
+  // {
+  //   band = 1;
+  // }
+  // else if (frequency <= 500)
+  // {
+  //   band = 2;
+  // }
+  // else if (frequency <= 1000)
+  // {
+  //   band = 3;
+  // }
+  // else if (frequency <= 2000)
+  // {
+  //   band = 4;
+  // }
+  // else if (frequency <= 4000)
+  // {
+  //   band = 5;
+  // }
+  // else
+  // {
+  //   band = 6;
+  // }
 
-  const int max_amplitude = 2048;
-  amplitude = std::min(amplitude, max_amplitude);
-  bands[band] = std::max(amplitude, (int)band);
+  bands[band] = amplitude;
 }
 
 // Declare our NeoPixel strip object:
@@ -93,82 +129,98 @@ static Analyzer analyzer(&strip);
 void setup()
 {
   Serial.begin(115200);
-  Wire.begin(-1, -1, 1000000UL);
 
-  bMicInitialized = microphone.begin();
-  if (bMicInitialized)
-  {
-    Serial.println("Microphone found, I2C connected");
-  }
-  else
-  {
-    Serial.println("No device found.");
-  }
+  // Wire.begin(-1, -1, 1000000UL);
 
-  setupWifi();
+  // bMicInitialized = microphone.begin();
+  // if (bMicInitialized)
+  // {
+  //   Serial.println("Microphone found, I2C connected");
+  // }
+  // else
+  // {
+  //   Serial.println("No device found.");
+  // }
 
-  analyzer.setup();
-  Band *band = new Band(0, 0, 20, EnLedCountDir::enLedCountDir_Top);
-  Band *band2 = new Band(1, 20, 20, EnLedCountDir::enLedCountDir_Down);
-  Band *band3 = new Band(2, 40, 20, EnLedCountDir::enLedCountDir_Top);
-  Band *band4 = new Band(3, 60, 20, EnLedCountDir::enLedCountDir_Down);
-  Band *band5 = new Band(4, 80, 20, EnLedCountDir::enLedCountDir_Top);
-  Band *band6 = new Band(5, 100, 20, EnLedCountDir::enLedCountDir_Down);
-  Band *band7 = new Band(6, 120, 20, EnLedCountDir::enLedCountDir_Top);
-  analyzer.setBand(band);
-  analyzer.setBand(band2);
-  analyzer.setBand(band3);
-  analyzer.setBand(band4);
-  analyzer.setBand(band5);
-  analyzer.setBand(band6);
-  analyzer.setBand(band7);
+  // setupWifi();
+
+  // analyzer.setup();
+  // Band *band = new Band(0, 0, 20, EnLedCountDir::enLedCountDir_Top);
+  // Band *band2 = new Band(1, 20, 20, EnLedCountDir::enLedCountDir_Down);
+  // Band *band3 = new Band(2, 40, 20, EnLedCountDir::enLedCountDir_Top);
+  // Band *band4 = new Band(3, 60, 20, EnLedCountDir::enLedCountDir_Down);
+  // Band *band5 = new Band(4, 80, 20, EnLedCountDir::enLedCountDir_Top);
+  // Band *band6 = new Band(5, 100, 20, EnLedCountDir::enLedCountDir_Down);
+  // Band *band7 = new Band(6, 120, 20, EnLedCountDir::enLedCountDir_Top);
+  // analyzer.setBand(band);
+  // analyzer.setBand(band2);
+  // analyzer.setBand(band3);
+  // analyzer.setBand(band4);
+  // analyzer.setBand(band5);
+  // analyzer.setBand(band6);
+  // analyzer.setBand(band7);
+
+  
 }
 
 void loop()
 {
-  if (!bMicInitialized)
-  {
-    Serial.println("Mic not initialized...");
-    delay(1000);
-  }
+  //Serial.println(analogRead(4));
+  // if (!bMicInitialized)
+  // {
+  //   Serial.println("Mic not initialized...");
+  //   delay(1000);
+  // }
 
   for (int i = 0; i < SAMPLE_SIZE; i++)
   {
-    vReal[i] = (double)microphone.getSingleEnded(2);
+    //vReal[i] = 4096 * cos(PI*2 * i * 1000/SAMPLE_FREQUENCY);    
+    vReal[i] = static_cast<int16_t>(analogRead(32));//microphone.getSingleEnded(2);
     vImag[i] = 0.0;
+
+    uint32_t start = micros();    
+    while ((micros() - start) <= 6)
+    {
+      
+    }
+    
   }
 
   FFT.Windowing(vReal, SAMPLE_SIZE, FFT_WIN_TYP_HAMMING, FFT_FORWARD);
-  FFT.Compute(vReal, vImag, FFT_WIN_TYP_HAMMING, FFT_FORWARD);
+  FFT.Compute(vReal, vImag, SAMPLE_SIZE, FFT_FORWARD);
   FFT.ComplexToMagnitude(vReal, vImag, SAMPLE_SIZE);
-  double x = FFT.MajorPeak(vReal, SAMPLE_SIZE, SAMPLE_FREQUENCY);
 
+
+  for (int i = 0; i < (SAMPLE_SIZE >> 1); i++)
+  {
+    double freq = (i * 1.0 * SAMPLE_FREQUENCY) / SAMPLE_SIZE;
+    //Serial.printf("%4.2fHz : %4.2f\n", freq, vReal[i]);
+  }
+  
   int k = 0;
   memset(bands, 0, sizeof(int) * 7);
-  std::stringstream result;
-  for (int i = 2; i < SAMPLE_SIZE / 2; i++)
+  for (int i = 2; i < (SAMPLE_SIZE >> 1); i++)
   {
-    createBands(i, vReal[i]);
-    // maxvalue = maxvalue < vReal[i] ? vReal[i] : maxvalue;
-    // result << std::setw(2) << k++ << ": ";
-    // result << std::setprecision(2) << std::fixed << std::setw(5) << vReal[i] << " ; ";
+    if (vReal[i] < 1000.0) {
+      continue;
+    }
+    createBands(i, static_cast<int32_t>(vReal[i]));
   }
 
   for (int i = 0; i < BANDS; i++)
   {
-    bands_normalized[i] = bands[i] * 100 / 2048;
-    Serial.printf("%d : %3d | %4d\t", i + 1, bands_normalized[i], bands[i]);
+    Serial.printf("%d : %4d\t", i, bands[i]);
   }
   Serial.println();
 
-  constexpr uint16_t REFRESH_RATE_MS = 200;
+  // constexpr uint16_t REFRESH_RATE_MS = 200;
 
-  static auto offset = millis();
-  if ((millis() - offset) > REFRESH_RATE_MS)
-  {
-    analyzer.loop(bands_normalized);
-    offset = millis();
-  }
+  // static auto offset = millis();
+  // if ((millis() - offset) > REFRESH_RATE_MS)
+  // {
+  //   analyzer.loop(bands_normalized);
+  //   offset = millis();
+  // }
 
-  WifiTask();
+  // WifiTask();
 }
