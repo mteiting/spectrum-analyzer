@@ -4,11 +4,23 @@
 
 const char *HtmlInput_Brightness = "input_brightness";
 const char *HtmlInput_PeakLedDelay = "input_peakleddelay";
+const char* PARAM_SLIDER_INPUT = "value";
 
 const char index_html[] PROGMEM = R"rawliteral(
     <!DOCTYPE html><html>
     <head><meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" href="data:,">
+
+    <style>
+      html {font-family: Arial; display: inline-block; text-align: center;}
+      h3 {font-size: 1rem;}
+      p {font-size: 1rem;}
+      body {max-width: 400px; margin:0px auto; padding-bottom: 25px;}
+      .slider { -webkit-appearance: none; margin: 14px; width: 360px; height: 25px; background: #FFD65C;
+        outline: none; -webkit-transition: .2s; transition: opacity .2s;}
+      .slider::-webkit-slider-thumb {-webkit-appearance: none; appearance: none; width: 35px; height: 35px; background: #003249; cursor: pointer;}
+      .slider::-moz-range-thumb { width: 35px; height: 35px; background: #003249; cursor: pointer; } 
+    </style>
 
     <title>spectrum analyzer</title>
     </head>
@@ -17,18 +29,36 @@ const char index_html[] PROGMEM = R"rawliteral(
       <h1>Spectrum Analyzer</h1>
       <style>html { font-family: Helvetica; display: inline-block; margin: 0px auto; text-align: center;}
         .button { background-color: #4CAF50; border: none; color: white; padding: 16px 40px;
-        text-decoration: none; font-size: 30px; margin: 2px; cursor: pointer;}
+        text-decoration: none; font-size: 10px; margin: 2px; cursor: pointer;}
       </style>
-      
-      <form action="/get">
-        Brightness: <input type="text" name="input_brightness">
-      <input type="submit" value="Submit">
-      </form><br>
-      <form action="/get">
-        PeakLedDelay: <input type="text" name="input_peakleddelay">
-        <input type="submit" value="Submit">
-      </form><br>
 
+      <h2>brightness</h2>
+      <p><span id="textSliderValue">%input_brightness%</span></p>
+      <p><input type="range" onchange="updateSliderBrightness(this)" id="brightnessSlider" min="0" max="100" value="%input_brightness%" step="1" class="slider"></p>
+      <script>
+        function updateSliderBrightness(element) {
+          var sliderValue = document.getElementById("brightnessSlider").value;
+          document.getElementById("textSliderValue").innerHTML = sliderValue;
+          var xhr = new XMLHttpRequest();
+          xhr.open("GET", "/slider?value="+sliderValue, true);
+          xhr.send();
+        }
+      </script>
+    
+      <h2>peak LED delay [ms] </h2>
+      PeakLedDelay: <input type="text" id="peakLedDelay" value="%input_peakleddelay%">
+      <button onclick="changePeakDelay()">set peak led delay</button>
+      <script>
+      function changePeakDelay() {
+        var delay = document.getElementById("peakLedDelay").value;
+        document.getElementById("peakLedDelay").value = delay;
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "/get_peakDelay?value="+delay, true);
+        xhr.send();
+      }
+      </script>
+
+      <h2> wifi scan </h2>
       <button onclick="scanWifi()">SCAN WIFI</button>
       <script>
       function scanWifi() {
@@ -37,7 +67,6 @@ const char index_html[] PROGMEM = R"rawliteral(
         xhr.send();
       }
       </script>
-
 
       <select id = "wifiList">
         <option value="--">empty</option>

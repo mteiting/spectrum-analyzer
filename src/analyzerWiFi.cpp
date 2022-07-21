@@ -35,6 +35,13 @@ static void notFound(AsyncWebServerRequest *request)
   request->send(404, "text/plain", "Not found");
 }
 
+static String sliderBrightnessValue(const String &var)
+{
+  if (var.equals(HtmlInput_Brightness))
+    return String(mglHtmlValues.u8Brightness);
+  return String();
+}
+
 static void setupServer()
 {
   IPAddress IP = WiFi.softAPIP();
@@ -44,17 +51,11 @@ static void setupServer()
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send_P(200, "text/html", index_html); });
 
-  server.on("/get", HTTP_GET, [](AsyncWebServerRequest *request)
+  server.on("/get_peakDelay", HTTP_GET, [](AsyncWebServerRequest *request)
             {
-            if (request->hasParam(HtmlInput_Brightness)) {
-              mglHtmlValues.u8Brightness = request->getParam(HtmlInput_Brightness)->value().toInt();
+            if (request->hasParam(PARAM_SLIDER_INPUT)){
+              mglHtmlValues.u8PeakLedDelay = request->getParam(PARAM_SLIDER_INPUT)->value().toInt();
             }
-            else if (request->hasParam(HtmlInput_PeakLedDelay)) {
-              mglHtmlValues.u8PeakLedDelay = request->getParam(HtmlInput_PeakLedDelay)->value().toInt();
-            }
-            else {
-            }
-            // request->send(200, "text/html", "<br><a href=\"/\">Return to Home Page</a>"); 
             request->send(200, "text/html", index_html); 
             request->redirect("/"); });
 
@@ -68,9 +69,19 @@ static void setupServer()
             { 
             if(mglsWifiList.empty())
               return;
-            Serial.println("sending wifi");
             request->send(200, "text/plain", mglsWifiList.c_str()); 
             mglsWifiList.erase(); });
+
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send_P(200, "text/html", index_html, sliderBrightnessValue); });
+
+  server.on("/slider", HTTP_GET, [](AsyncWebServerRequest *request)
+            {
+            if (request->hasParam(PARAM_SLIDER_INPUT)) {
+              String sliderValue = request->getParam(PARAM_SLIDER_INPUT)->value();
+              mglHtmlValues.u8Brightness = sliderValue.toInt();
+            }
+            request->send(200, "text/plain", "OK"); });
 
   server.onNotFound(notFound);
   server.begin();
