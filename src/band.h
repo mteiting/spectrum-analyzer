@@ -19,7 +19,7 @@ private:
   uint8_t _u8Level; // in %
   EnLedCountDir _enCountDir;
 
-  void updatePeakLED(uint8_t u8CurrentLedLevel, uint32_t &tPeakLedTimer);
+  void updatePeakLED(uint8_t u8CurrentLedLevel, bool bUpdatePeakLED);
 
 public:
   Band(){};
@@ -36,7 +36,7 @@ public:
   void setNumber(uint8_t newNumber);
 
   uint8_t getLevel();
-  void updateBandLevel(uint8_t newLevel, uint32_t &tPeakLedTimer);
+  void updateBandLevel(uint8_t newLevel, bool bUpdatePeakLED);
 
   TstRGB &getLedColor(uint16_t u16Led);
   void setLedCountDir(EnLedCountDir enNewDir);

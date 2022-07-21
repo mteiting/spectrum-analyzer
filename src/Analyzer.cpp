@@ -5,7 +5,7 @@
 #include "tools.h"
 
 constexpr uint8_t DEFAULT_BRIGHTNESS = 30;
-constexpr uint32_t DEFAULT_REFRESH_TIME_PEAK_LED = 40; // in ms
+constexpr uint32_t DEFAULT_REFRESH_TIME_PEAK_LED = 15; // in ms
 
 Analyzer::Analyzer(Adafruit_NeoPixel *ledControl) : _ledControl(ledControl),
                                                     _u32PeakLedDelay(DEFAULT_REFRESH_TIME_PEAK_LED),
@@ -52,18 +52,22 @@ void Analyzer::loop(std::vector<uint8_t> &newLevel)
   if (_ledControl == nullptr)
     return;
 
+  bool bUpdatePeakLEDs = isTimeExpired(_timerPeakLedRefresh, getHtmlValues().u8PeakLedDelay);
   _ledControl->setBrightness(getHtmlValues().u8Brightness);
   for (const auto &strip : _bands)
   {
-    strip->updateBandLevel(newLevel.at(strip->getNumber()), _timerPeakLedRefresh);
+    Serial.printf("band %u    ",strip->getNumber());
+    strip->updateBandLevel(newLevel.at(strip->getNumber()), bUpdatePeakLEDs);
 
     uint16_t u16NumOfLed = strip->getNumOfLEDs();
     for (uint16_t led = 0; led < u16NumOfLed; led++)
     {
       TstRGB rgb = strip->getLedColor(led);
+      Serial.printf("led %u  red %u green %u blue %u \n",led,rgb.red, rgb.green, rgb.blue);
       _ledControl->setPixelColor(strip->getHardwareLedNumber(led),
                                  _ledControl->Color(rgb.red, rgb.green, rgb.blue));
     }
-    _ledControl->show();
   }
+
+  _ledControl->show();
 }

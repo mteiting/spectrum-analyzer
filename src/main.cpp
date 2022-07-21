@@ -10,6 +10,9 @@
 #include "band.h"
 #include "analyzerWiFi.h"
 
+#include "driver/i2s.h"
+#include "esp_event.h"
+
 // Declare our NeoPixel strip object:
 static Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 // Argument 1 = Number of pixels in NeoPixel strip
@@ -21,6 +24,10 @@ static Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 //   NEO_RGB     Pixels are wired for RGB bitstream (v1 FLORA pixels, not v2)
 //   NEO_RGBW    Pixels are wired for RGBW bitstream (NeoPixel RGBW products)
 static Analyzer analyzer(&strip);
+
+static QueueHandle_t i2s_event_queue;
+uint32_t    SAMPLE_RATE = 44000;
+uint32_t    NUM_SAMPLES = 512;
 
 void setup()
 {
@@ -49,26 +56,31 @@ void loop()
 {
   static auto offset = millis();
   static std::vector<uint8_t> currentLevel{
-      static_cast<uint8_t>(rand() % 100),
-      static_cast<uint8_t>(rand() % 100),
-      static_cast<uint8_t>(rand() % 100),
-      static_cast<uint8_t>(rand() % 100),
-      static_cast<uint8_t>(rand() % 100),
-      static_cast<uint8_t>(rand() % 100),
-      static_cast<uint8_t>(rand() % 100)};
+      static_cast<uint8_t>(50),
+      static_cast<uint8_t>(50),
+      static_cast<uint8_t>(50),
+      static_cast<uint8_t>(50),
+      static_cast<uint8_t>(50),
+      static_cast<uint8_t>(50),
+      static_cast<uint8_t>(50)};
 
 
-  if ((millis() - offset) > 50)
+  static bool toggle = false;
+  if ((millis() - offset) > 5000)
   {
-    std::vector<uint8_t> newLevel{
-        static_cast<uint8_t>(rand() % 100),
-        static_cast<uint8_t>(rand() % 100),
-        static_cast<uint8_t>(rand() % 100),
-        static_cast<uint8_t>(rand() % 100),
-        static_cast<uint8_t>(rand() % 100),
-        static_cast<uint8_t>(rand() % 100),
-        static_cast<uint8_t>(rand() % 100)};
-    currentLevel = newLevel;
+    std::vector<uint8_t> onnnn(7,50);
+    std::vector<uint8_t> offff(7,0);
+    if(toggle)
+    {
+      Serial.println("toggle");
+      currentLevel = onnnn;
+    }
+    else
+    {
+      Serial.println("nicht toggle");
+      currentLevel = offff;
+    }
+    toggle = !toggle;
     offset = millis();
   }
 
