@@ -12,7 +12,7 @@ const char index_html[] PROGMEM = R"rawliteral(
       .button { background-color: #4CAF50; border: none; color: white; padding: 16px 40px;
       text-decoration: none; font-size: 30px; margin: 2px; cursor: pointer;}
     </style></head>
-    <p><a <button class="button">SCAN</button></a></p>
+    
     <form action="/get">
       Brightness: <input type="text" name="input_brightness">
      <input type="submit" value="Submit">
@@ -21,5 +21,15 @@ const char index_html[] PROGMEM = R"rawliteral(
       PeakLedDelay: <input type="text" name="input_peakleddelay">
       <input type="submit" value="Submit">
     </form><br>
+
+    <button onclick="myFunction()">SCAN WIFI</button>
+    <script>
+    function myFunction() {
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", "/scan_wifi");
+      xhr.send();
+    }
+    </script>
+
     </body></html>
 )rawliteral";

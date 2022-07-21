@@ -73,4 +73,5 @@ void loop()
   }
 
   analyzer.loop(currentLevel);
+  WifiTask();
 }
