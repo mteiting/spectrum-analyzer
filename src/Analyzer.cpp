@@ -55,8 +55,7 @@ void Analyzer::loop(std::vector<uint8_t> &newLevel)
   _ledControl->setBrightness(getHtmlValues().u8Brightness);
   for (const auto &strip : _bands)
   {
-    strip->updateBandLevel(newLevel.at(strip->getNumber()),
-                           isTimeExpired(_timerPeakLedRefresh, getHtmlValues().u8PeakLedDelay));
+    strip->updateBandLevel(newLevel.at(strip->getNumber()), _timerPeakLedRefresh);
 
     uint16_t u16NumOfLed = strip->getNumOfLEDs();
     for (uint16_t led = 0; led < u16NumOfLed; led++)

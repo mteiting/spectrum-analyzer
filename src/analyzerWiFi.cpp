@@ -53,8 +53,8 @@ static void setupServer()
 
   server.on("/get_peakDelay", HTTP_GET, [](AsyncWebServerRequest *request)
             {
-            if (request->hasParam(PARAM_SLIDER_INPUT)){
-              mglHtmlValues.u8PeakLedDelay = request->getParam(PARAM_SLIDER_INPUT)->value().toInt();
+            if (request->hasParam(PARAM_INPUT)){
+              mglHtmlValues.u8PeakLedDelay = request->getParam(PARAM_INPUT)->value().toInt();
             }
             request->send(200, "text/html", index_html); 
             request->redirect("/"); });
@@ -77,8 +77,8 @@ static void setupServer()
 
   server.on("/slider", HTTP_GET, [](AsyncWebServerRequest *request)
             {
-            if (request->hasParam(PARAM_SLIDER_INPUT)) {
-              String sliderValue = request->getParam(PARAM_SLIDER_INPUT)->value();
+            if (request->hasParam(PARAM_INPUT)) {
+              String sliderValue = request->getParam(PARAM_INPUT)->value();
               mglHtmlValues.u8Brightness = sliderValue.toInt();
             }
             request->send(200, "text/plain", "OK"); });

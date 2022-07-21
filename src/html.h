@@ -3,8 +3,7 @@
 #include "Arduino.h"
 
 const char *HtmlInput_Brightness = "input_brightness";
-const char *HtmlInput_PeakLedDelay = "input_peakleddelay";
-const char* PARAM_SLIDER_INPUT = "value";
+const char* PARAM_INPUT = "value";
 
 const char index_html[] PROGMEM = R"rawliteral(
     <!DOCTYPE html><html>
