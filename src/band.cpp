@@ -15,7 +15,7 @@ Band::Band(uint8_t u8Number, uint16_t u16OffsetLED, uint16_t u16NumOfLEDs, EnLed
                                                                                                        _u8Level(0),
                                                                                                        _u16PeakLED(0)
 {
-  for (uint16_t u16CurrentLed; u16CurrentLed < _u16NumOfLEDs; u16CurrentLed++)
+  for (uint16_t u16CurrentLed = 0; u16CurrentLed < _u16NumOfLEDs; u16CurrentLed++)
     this->_mLedColor.insert(std::pair<uint16_t, TstRGB>(u16CurrentLed, TstRGB()));
 }
 
@@ -56,10 +56,14 @@ uint8_t Band::getLevel()
 
 void Band::updateBandLevel(uint8_t newLevel, bool bUpdatePeakLED)
 {
+  constexpr uint8_t PROZENT_MAX = 100; //[%]
+  // wenn ueber 100% dann auf 100 begrenzen
+  if(newLevel > PROZENT_MAX)
+    newLevel = PROZENT_MAX;
   // level in %
   _u8Level = newLevel;
   // welche leds muessen eingeschaltet werden
-  uint8_t currentLedLevel = this->_u16NumOfLEDs * newLevel / 100;
+  uint8_t currentLedLevel = this->_u16NumOfLEDs * newLevel / PROZENT_MAX;
 
   std::map<uint16_t, TstRGB>::iterator it;
   for (it = _mLedColor.begin(); it != _mLedColor.end(); it++)
@@ -116,8 +120,8 @@ void Band::updatePeakLED(uint8_t u8CurrentLedLevel, bool bUpdatePeakLED)
   {
     _u16PeakLED = u8CurrentLedLevel;
   }
-  else if (bUpdatePeakLED) // peak led hoeher als aktuelles level, also langsam runter gehen
-  {
+  else if (bUpdatePeakLED) 
+  { // peak led hoeher als aktuelles level, also langsam runter gehen, bUpdatePeakLED = true wenn delay abgelaufen
     resetLedColor(_mLedColor[_u16PeakLED]);
     if(_u16PeakLED)
       _u16PeakLED -= 1;

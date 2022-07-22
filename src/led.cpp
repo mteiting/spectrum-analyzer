@@ -31,18 +31,18 @@ void getRGB4Level(TstRGB &rgb, uint16_t Level)
     rgb.red = 255;
     break;
   case 3: case 4:
-    rgb.blue = 48;
-    rgb.green = 48;
+    rgb.blue = 0;
+    rgb.green = 60;
     rgb.red = 255;
     break;
   case 5: case 6:
     rgb.blue = 0;
-    rgb.green = 69;
+    rgb.green = 140;
     rgb.red = 255;
     break;
   case 7: case 8:
     rgb.blue = 0;
-    rgb.green = 140;
+    rgb.green = 180;
     rgb.red = 255;
     break;
   case 9: case 10:
@@ -53,17 +53,17 @@ void getRGB4Level(TstRGB &rgb, uint16_t Level)
   case 11: case 12:
     rgb.blue = 0;
     rgb.green = 255;
-    rgb.red = 255;
+    rgb.red = 200;
     break;
   case 13: case 14:
     rgb.blue = 0;
     rgb.green = 255;
-    rgb.red = 0;
+    rgb.red = 100;
     break;
   case 15: case 16:
     rgb.blue = 0;
     rgb.green = 255;
-    rgb.red = 100;
+    rgb.red = 0;
     break;
   case 17: case 18:
     rgb.blue = 255;
