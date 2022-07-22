@@ -54,7 +54,7 @@ static void setupServer()
   server.on("/get_peakDelay", HTTP_GET, [](AsyncWebServerRequest *request)
             {
             if (request->hasParam(PARAM_INPUT)){
-              mglHtmlValues.u8PeakLedDelay = request->getParam(PARAM_INPUT)->value().toInt();
+              mglHtmlValues.u32PeakLedDelay = request->getParam(PARAM_INPUT)->value().toInt();
             }
             request->send(200, "text/html", index_html); 
             request->redirect("/"); });

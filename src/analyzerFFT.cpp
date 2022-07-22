@@ -103,6 +103,8 @@ void analyzerFFT_Task()
       FFT.Windowing(vReal, SAMPLE_SIZE, FFT_WIN_TYP_HAMMING, FFT_FORWARD);
       FFT.Compute(vReal, vImag, SAMPLE_SIZE, FFT_FORWARD);
       FFT.ComplexToMagnitude(vReal, vImag, SAMPLE_SIZE);
+      // double x = FFT.MajorPeak(vReal, SAMPLE_SIZE, SAMPLE_FREQUENCY);
+      // Serial.println(x);
 
       memset(bands, 0, sizeof(int) * 7);
       for (int i = 2; i < (SAMPLE_SIZE >> 1); i++)
@@ -116,7 +118,7 @@ void analyzerFFT_Task()
       for (int i = 0; i < BANDS; i++)
       {
         // Serial.printf("%d : %4d\t", i, bands[i]);
-        uint8_t value = static_cast<uint8_t>((bands[i] * 100) / 150000);
+        uint8_t value = static_cast<uint8_t>((bands[i] * 100) / 160000);
         if (value > 100)
           value = 100;
         normalized_bands[i] = value;

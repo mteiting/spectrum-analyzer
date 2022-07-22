@@ -19,8 +19,6 @@ class Analyzer : public IAnalyzer
 private:
   Adafruit_NeoPixel *_ledControl;
   std::vector<Band *> _bands;
-  uint32_t _u32PeakLedDelay;
-  uint32_t _timerPeakLedRefresh;
 
 public:
   Analyzer(Adafruit_NeoPixel *ledControl);
@@ -37,7 +35,6 @@ class AnalyzerIP : public IAnalyzer
 private:
   IPAddress _ipadress;
   std::vector<Band *> _bands;
-  uint32_t _u32PeakLedDelay;
 
 public:
   AnalyzerIP(IPAddress &ipadress);

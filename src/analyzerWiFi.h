@@ -4,7 +4,7 @@ struct StHtmlValues
 {
   bool bScanForWifi = false;
   uint8_t u8Brightness = 0;
-  uint8_t u8PeakLedDelay = 0;
+  uint32_t u32PeakLedDelay = 0;
 };
 
 String getSSID();

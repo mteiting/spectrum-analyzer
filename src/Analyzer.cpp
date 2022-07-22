@@ -4,12 +4,9 @@
 #include "analyzerWiFi.h"
 #include "tools.h"
 
-constexpr uint8_t DEFAULT_BRIGHTNESS = 30;
-constexpr uint32_t DEFAULT_REFRESH_TIME_PEAK_LED = 15; // in ms
+constexpr uint8_t DEFAULT_BRIGHTNESS = 30; //[%]
 
-Analyzer::Analyzer(Adafruit_NeoPixel *ledControl) : _ledControl(ledControl),
-                                                    _u32PeakLedDelay(DEFAULT_REFRESH_TIME_PEAK_LED),
-                                                    _timerPeakLedRefresh(millis())
+Analyzer::Analyzer(Adafruit_NeoPixel *ledControl) : _ledControl(ledControl)
 {
   if (_ledControl == nullptr)
     Serial.println("was not able to create ledControl");
@@ -27,7 +24,6 @@ void Analyzer::setup()
     return;
   StHtmlValues html{};
   html.u8Brightness = DEFAULT_BRIGHTNESS;
-  html.u8PeakLedDelay = DEFAULT_REFRESH_TIME_PEAK_LED;
   setHtmlValues(html);
 
   _ledControl->begin();
@@ -52,11 +48,11 @@ void Analyzer::loop(std::vector<uint8_t> &newLevel)
   if (_ledControl == nullptr)
     return;
 
-  bool bUpdatePeakLEDs = isTimeExpired(_timerPeakLedRefresh, getHtmlValues().u8PeakLedDelay);
   _ledControl->setBrightness(getHtmlValues().u8Brightness);
   for (const auto &strip : _bands)
   {
-    strip->updateBandLevel(newLevel.at(strip->getNumber()), bUpdatePeakLEDs);
+    strip->setPeakLedDelay(getHtmlValues().u32PeakLedDelay);
+    strip->updateBandLevel(newLevel.at(strip->getNumber()));
 
     uint16_t u16NumOfLed = strip->getNumOfLEDs();
     for (uint16_t led = 0; led < u16NumOfLed; led++)

@@ -4,6 +4,8 @@
 #include "analyzerWiFi.h"
 #include "tools.h"
 
+constexpr uint32_t DEFAULT_REFRESH_TIME_PEAK_LED = 100; // in [ms]
+
 //#####################################################################
 //                  public
 //#####################################################################
@@ -12,8 +14,10 @@ Band::Band(uint8_t u8Number, uint16_t u16OffsetLED, uint16_t u16NumOfLEDs, EnLed
                                                                                                        _u16NumOfLEDs(u16NumOfLEDs),
                                                                                                        _u16LedOffset(u16OffsetLED),
                                                                                                        _enCountDir(enCountDir),
+                                                                                                       _u32PeakLedDelay(DEFAULT_REFRESH_TIME_PEAK_LED),
                                                                                                        _u8Level(0),
-                                                                                                       _u16PeakLED(0)
+                                                                                                       _u16PeakLED(0),
+                                                                                                       _timerPeakLedRefresh(millis())
 {
   for (uint16_t u16CurrentLed = 0; u16CurrentLed < _u16NumOfLEDs; u16CurrentLed++)
     this->_mLedColor.insert(std::pair<uint16_t, TstRGB>(u16CurrentLed, TstRGB()));
@@ -49,16 +53,26 @@ void Band::setNumber(uint8_t newNumber)
   this->_u8Number = newNumber;
 }
 
+uint32_t Band::getPeakLedDelay()
+{
+  return this->_u32PeakLedDelay;
+}
+
+void Band::setPeakLedDelay(uint32_t u32NewDelay)
+{
+  this->_u32PeakLedDelay = u32NewDelay;
+}
+
 uint8_t Band::getLevel()
 {
   return this->_u8Level;
 }
 
-void Band::updateBandLevel(uint8_t newLevel, bool bUpdatePeakLED)
+void Band::updateBandLevel(uint8_t newLevel)
 {
   constexpr uint8_t PROZENT_MAX = 100; //[%]
   // wenn ueber 100% dann auf 100 begrenzen
-  if(newLevel > PROZENT_MAX)
+  if (newLevel > PROZENT_MAX)
     newLevel = PROZENT_MAX;
   // level in %
   _u8Level = newLevel;
@@ -74,7 +88,7 @@ void Band::updateBandLevel(uint8_t newLevel, bool bUpdatePeakLED)
       resetLedColor(it->second);
   }
 
-  updatePeakLED(currentLedLevel, bUpdatePeakLED);
+  updatePeakLED(currentLedLevel);
 }
 
 TstRGB &Band::getLedColor(uint16_t u16Number)
@@ -114,16 +128,20 @@ uint16_t Band::getHardwareLedNumber(uint16_t u16CurrentLed)
  *
  * @param u8CurrentLedLevel letzte noch eingeschaltete led des bandes
  */
-void Band::updatePeakLED(uint8_t u8CurrentLedLevel, bool bUpdatePeakLED)
+void Band::updatePeakLED(uint8_t u8CurrentLedLevel)
 {
+  bool bUpdatePeakLED = isTimeExpired(_timerPeakLedRefresh, _u32PeakLedDelay);
+
   if (_u16PeakLED <= u8CurrentLedLevel)
   {
     _u16PeakLED = u8CurrentLedLevel;
+    _timerPeakLedRefresh = millis();
   }
-  else if (bUpdatePeakLED) 
+  else if (bUpdatePeakLED)
   { // peak led hoeher als aktuelles level, also langsam runter gehen, bUpdatePeakLED = true wenn delay abgelaufen
     resetLedColor(_mLedColor[_u16PeakLED]);
-    if(_u16PeakLED)
+    _timerPeakLedRefresh = millis();
+    if (_u16PeakLED)
       _u16PeakLED -= 1;
   }
   else
