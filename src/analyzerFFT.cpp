@@ -116,7 +116,7 @@ void analyzerFFT_Task()
       for (int i = 0; i < BANDS; i++)
       {
         // Serial.printf("%d : %4d\t", i, bands[i]);
-        uint8_t value = static_cast<uint8_t>((bands[i] * 100) / 300000);
+        uint8_t value = static_cast<uint8_t>((bands[i] * 100) / 150000);
         if (value > 100)
           value = 100;
         normalized_bands[i] = value;
