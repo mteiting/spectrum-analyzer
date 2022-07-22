@@ -49,10 +49,12 @@ static void createBands(int i, uint32_t amplitude)
   else if (frequency <= 6250)
   {
     band = 5;
+    amplitude *= 1.05;
   }
   else
   {
     band = 6;
+    amplitude *= 1.05;
   }
   bands[band] = std::max(bands[band], amplitude);
 }
