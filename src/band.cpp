@@ -87,8 +87,7 @@ void Band::updateBandLevel(uint8_t newLevel)
     else
       resetLedColor(it->second);
   }
-
-  updatePeakLED(currentLedLevel);
+  this->updatePeakLED(currentLedLevel);
 }
 
 TstRGB &Band::getLedColor(uint16_t u16Number)

@@ -16,18 +16,15 @@ static std::string mglsWifiList = "";
 
 static void scanForWifiNetworks()
 {
-  Serial.println("Scanning...");
   mglHtmlValues.bScanForWifi = false;
 
   uint16_t u16NumOfWifiNetworks = WiFi.scanNetworks();
-  Serial.println(u16NumOfWifiNetworks);
   for (uint8_t u8CurrentWifi = 0; u8CurrentWifi < u16NumOfWifiNetworks; u8CurrentWifi++)
   {
     std::string newWifi = std::string(WiFi.SSID(u8CurrentWifi).c_str());
     mglsWifiList.append(newWifi);
     mglsWifiList += "##";
   }
-  Serial.println(mglsWifiList.c_str());
 }
 
 static void notFound(AsyncWebServerRequest *request)
