@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <memory>
 #include "Adafruit_NeoPixel.h"
 #include "Analyzer.h"
 #include "analyzerFFT.h"
@@ -6,8 +7,9 @@
 #include "band.h"
 #include "analyzerWiFi.h"
 
-static Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
-static Analyzer analyzer(&strip);
+
+std::shared_ptr<Adafruit_NeoPixel> _strip = nullptr;
+std::shared_ptr<Analyzer> _analyzer = nullptr;
 
 void setup()
 {
@@ -16,26 +18,30 @@ void setup()
   analyzerFFT_Setup();
   setupWifi();
 
-  analyzer.setup();
-  Band *band = new Band(0, 0, 20, EnLedCountDir::enLedCountDir_Top);
-  Band *band2 = new Band(1, 20, 20, EnLedCountDir::enLedCountDir_Down);
-  Band *band3 = new Band(2, 40, 20, EnLedCountDir::enLedCountDir_Top);
-  Band *band4 = new Band(3, 60, 20, EnLedCountDir::enLedCountDir_Down);
-  Band *band5 = new Band(4, 80, 20, EnLedCountDir::enLedCountDir_Top);
-  Band *band6 = new Band(5, 100, 20, EnLedCountDir::enLedCountDir_Down);
-  Band *band7 = new Band(6, 120, 20, EnLedCountDir::enLedCountDir_Top);
-  analyzer.setBand(band);
-  analyzer.setBand(band2);
-  analyzer.setBand(band3);
-  analyzer.setBand(band4);
-  analyzer.setBand(band5);
-  analyzer.setBand(band6);
-  analyzer.setBand(band7);
+
+  _strip = std::make_shared<Adafruit_NeoPixel>(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
+  _analyzer = std::make_shared<Analyzer>(_strip);
+
+  _analyzer->setup();
+  std::shared_ptr<Band> band = std::make_shared<Band>(0, 0, 20, EnLedCountDir::enLedCountDir_Top);
+  std::shared_ptr<Band> band2 = std::make_shared<Band>(1, 20, 20, EnLedCountDir::enLedCountDir_Down);
+  std::shared_ptr<Band> band3 = std::make_shared<Band>(2, 40, 20, EnLedCountDir::enLedCountDir_Top);
+  std::shared_ptr<Band> band4 = std::make_shared<Band>(3, 60, 20, EnLedCountDir::enLedCountDir_Down);
+  std::shared_ptr<Band> band5 = std::make_shared<Band>(4, 80, 20, EnLedCountDir::enLedCountDir_Top);
+  std::shared_ptr<Band> band6 = std::make_shared<Band>(5, 100, 20, EnLedCountDir::enLedCountDir_Down);
+  std::shared_ptr<Band> band7 = std::make_shared<Band>(6, 120, 20, EnLedCountDir::enLedCountDir_Top);
+  _analyzer->setBand(band);
+  _analyzer->setBand(band2);
+  _analyzer->setBand(band3);
+  _analyzer->setBand(band4);
+  _analyzer->setBand(band5);
+  _analyzer->setBand(band6);
+  _analyzer->setBand(band7);
 }
 
 void loop()
 {
   analyzerFFT_Task();
-  analyzer.loop(getBandsFromFFT());
+  _analyzer->loop(getBandsFromFFT());
   WifiTask();
 }

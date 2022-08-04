@@ -6,7 +6,7 @@
 
 constexpr uint8_t DEFAULT_BRIGHTNESS = 30; //[%]
 
-Analyzer::Analyzer(Adafruit_NeoPixel *ledControl) : _ledControl(ledControl)
+Analyzer::Analyzer(std::shared_ptr<Adafruit_NeoPixel> ledControl) : _ledControl(ledControl)
 {
   if (_ledControl == nullptr)
     Serial.println("was not able to create ledControl");
@@ -14,8 +14,6 @@ Analyzer::Analyzer(Adafruit_NeoPixel *ledControl) : _ledControl(ledControl)
 
 Analyzer::~Analyzer()
 {
-  if (_ledControl)
-    delete (_ledControl);
 }
 
 void Analyzer::setup()
@@ -31,16 +29,16 @@ void Analyzer::setup()
   _ledControl->setBrightness(getHtmlValues().u8Brightness);
 }
 
-std::vector<Band *> Analyzer::getBands()
+std::vector<std::shared_ptr<Band>> Analyzer::getBands()
 {
   return this->_bands;
 }
 
-void Analyzer::setBand(Band *newBand)
+void Analyzer::setBand(std::shared_ptr<Band>& newBand)
 {
   if (newBand == nullptr)
     return;
-  this->_bands.push_back(newBand);
+  this->_bands.push_back(std::move(newBand));
 }
 
 void Analyzer::loop(std::vector<uint8_t> &newLevel)
