@@ -7,7 +7,6 @@
 #include "band.h"
 #include "analyzerWiFi.h"
 
-
 std::shared_ptr<Adafruit_NeoPixel> _strip = nullptr;
 std::shared_ptr<Analyzer> _analyzer = nullptr;
 
@@ -17,7 +16,6 @@ void setup()
 
   analyzerFFT_Setup();
   setupWifi();
-
 
   _strip = std::make_shared<Adafruit_NeoPixel>(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
   _analyzer = std::make_shared<Analyzer>(_strip);

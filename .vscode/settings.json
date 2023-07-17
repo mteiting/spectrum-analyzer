@@ -295,5 +295,6 @@
     "bitset": "cpp",
     "regex": "cpp",
     "iostream": "cpp"
-  }
+  },
+  "cmake.configureOnOpen": false
 }
