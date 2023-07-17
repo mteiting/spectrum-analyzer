@@ -6,12 +6,17 @@
 
 constexpr uint32_t DEFAULT_REFRESH_TIME_PEAK_LED = 100; // in [ms]
 
-//#####################################################################
-//                  public
-//#####################################################################
+// #####################################################################
+//                   public
+// #####################################################################
 
-Band::Band(uint8_t u8Number, uint16_t u16OffsetLED, uint16_t u16NumOfLEDs, EnLedCountDir enCountDir)
-    : _u8Number(u8Number),
+Band::Band(std::shared_ptr<Adafruit_NeoPixel> ledControl,
+           uint8_t u8Number,
+           uint16_t u16OffsetLED,
+           uint16_t u16NumOfLEDs,
+           EnLedCountDir enCountDir)
+    : _ledControl(ledControl),
+      _u8Number(u8Number),
       _u16NumOfLEDs(u16NumOfLEDs),
       _u16LedOffset(u16OffsetLED),
       _enCountDir(enCountDir),
@@ -119,9 +124,9 @@ uint16_t Band::getHardwareLedNumber(uint16_t u16CurrentLed)
   return u16HwLedNum + _u16LedOffset;
 }
 
-//#####################################################################
-//                  private
-//#####################################################################
+// #####################################################################
+//                   private
+// #####################################################################
 
 /**
  * @brief berechnet die peak led

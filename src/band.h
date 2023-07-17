@@ -1,5 +1,7 @@
 #pragma once
 #include <map>
+#include <memory>
+#include <Adafruit_NeoPixel.h>
 #include "led.h"
 
 enum class EnLedCountDir
@@ -11,6 +13,8 @@ enum class EnLedCountDir
 class Band
 {
 private:
+  std::shared_ptr<Adafruit_NeoPixel> _ledControl;
+
   std::map<uint16_t, TstRGB> _mLedColor;
   uint16_t _u16NumOfLEDs;
   uint16_t _u16LedOffset;
@@ -24,9 +28,15 @@ private:
   void updatePeakLED(uint8_t u8CurrentLedLevel);
 
 public:
-  Band(){};
-  Band(uint8_t u8Number, uint16_t u16OffsetLED, uint16_t u16NumOfLEDs, EnLedCountDir enCountDir);
+  Band() = delete;
+  Band(std::shared_ptr<Adafruit_NeoPixel> ledControl,
+       uint8_t u8Number,
+       uint16_t u16OffsetLED,
+       uint16_t u16NumOfLEDs,
+       EnLedCountDir enCountDir);
   virtual ~Band(){};
+
+  inline std::shared_ptr<Adafruit_NeoPixel> &getStrip() { return _ledControl; }
 
   uint16_t getNumOfLEDs();
   void setNumOfLEDs(uint16_t &);

@@ -18,23 +18,23 @@ void setup()
   setupWifi();
 
   _strip = std::make_shared<Adafruit_NeoPixel>(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
-  _analyzer = std::make_shared<Analyzer>(_strip);
+  _analyzer = std::make_shared<Analyzer>();
 
-  _analyzer->setup();
-  std::shared_ptr<Band> band = std::make_shared<Band>(0, 0, 20, EnLedCountDir::enLedCountDir_Top);
-  std::shared_ptr<Band> band2 = std::make_shared<Band>(1, 20, 20, EnLedCountDir::enLedCountDir_Down);
-  std::shared_ptr<Band> band3 = std::make_shared<Band>(2, 40, 20, EnLedCountDir::enLedCountDir_Top);
-  std::shared_ptr<Band> band4 = std::make_shared<Band>(3, 60, 20, EnLedCountDir::enLedCountDir_Down);
-  std::shared_ptr<Band> band5 = std::make_shared<Band>(4, 80, 20, EnLedCountDir::enLedCountDir_Top);
-  std::shared_ptr<Band> band6 = std::make_shared<Band>(5, 100, 20, EnLedCountDir::enLedCountDir_Down);
-  std::shared_ptr<Band> band7 = std::make_shared<Band>(6, 120, 20, EnLedCountDir::enLedCountDir_Top);
-  _analyzer->setBand(band);
+  std::shared_ptr<Band> band1 = std::make_shared<Band>(_strip, 0, 0, 20, EnLedCountDir::enLedCountDir_Top);
+  std::shared_ptr<Band> band2 = std::make_shared<Band>(_strip, 1, 20, 20, EnLedCountDir::enLedCountDir_Down);
+  std::shared_ptr<Band> band3 = std::make_shared<Band>(_strip, 2, 40, 20, EnLedCountDir::enLedCountDir_Top);
+  std::shared_ptr<Band> band4 = std::make_shared<Band>(_strip, 3, 60, 20, EnLedCountDir::enLedCountDir_Down);
+  std::shared_ptr<Band> band5 = std::make_shared<Band>(_strip, 4, 80, 20, EnLedCountDir::enLedCountDir_Top);
+  std::shared_ptr<Band> band6 = std::make_shared<Band>(_strip, 5, 100, 20, EnLedCountDir::enLedCountDir_Down);
+  std::shared_ptr<Band> band7 = std::make_shared<Band>(_strip, 6, 120, 20, EnLedCountDir::enLedCountDir_Top);
+  _analyzer->setBand(band1);
   _analyzer->setBand(band2);
   _analyzer->setBand(band3);
   _analyzer->setBand(band4);
   _analyzer->setBand(band5);
   _analyzer->setBand(band6);
   _analyzer->setBand(band7);
+  _analyzer->setup();
 }
 
 void loop()
