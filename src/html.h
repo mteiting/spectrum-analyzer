@@ -3,7 +3,7 @@
 #include "Arduino.h"
 
 const char *HtmlInput_Brightness = "input_brightness";
-const char* PARAM_INPUT = "value";
+const char *PARAM_INPUT = "value";
 
 const char index_html[] PROGMEM = R"rawliteral(
     <!DOCTYPE html><html>
@@ -53,6 +53,19 @@ const char index_html[] PROGMEM = R"rawliteral(
         document.getElementById("peakLedDelay").value = delay;
         var xhr = new XMLHttpRequest();
         xhr.open("GET", "/get_peakDelay?value="+delay, true);
+        xhr.send();
+      }
+      </script>
+
+      <h2>mic gain [%] </h2>
+      Mic-Gain: <input type="text" id="micGain" value="%input_micGain%">
+      <button onclick="changeMicGain()">set mic gain</button>
+      <script>
+      function changeMicGain() {
+        var delay = document.getElementById("micGain").value;
+        document.getElementById("micGain").value = delay;
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "/get_micGain?value="+delay, true);
         xhr.send();
       }
       </script>

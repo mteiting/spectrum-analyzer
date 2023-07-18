@@ -3,10 +3,8 @@
 #include <algorithm>
 #include "driver/i2s.h"
 #include "esp_event.h"
-
-#define SAMPLE_SIZE 512ul
-#define SAMPLE_FREQUENCY 44000ul
-#define BANDS 7
+#include "analyzerWiFi.h"
+#include "defaults.h"
 
 static arduinoFFT FFT = arduinoFFT();
 static QueueHandle_t i2s_event_queue;
@@ -17,7 +15,7 @@ static uint32_t get_frequency(int i)
 {
   if (i < 2)
     return 0;
-  
+
   return ((i - 2) * SAMPLE_FREQUENCY) / SAMPLE_SIZE;
 }
 
@@ -25,6 +23,7 @@ static void createBands(int i, uint32_t amplitude)
 {
   uint32_t frequency = get_frequency(i);
   uint8_t band = 0;
+  amplitude = amplitude * getHtmlValues().fGain;
 
   if (frequency <= 63)
   {

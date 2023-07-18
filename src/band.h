@@ -38,22 +38,22 @@ public:
 
   inline std::shared_ptr<Adafruit_NeoPixel> &getStrip() { return _ledControl; }
 
-  uint16_t getNumOfLEDs();
-  void setNumOfLEDs(uint16_t &);
+  inline uint16_t getNumOfLEDs() { return _u16NumOfLEDs; }
+  inline void setNumOfLEDs(uint16_t &newNumberOfLeds) { _u16NumOfLEDs = newNumberOfLeds; }
 
-  uint16_t getLedOffset();
-  void setLedOffset(uint16_t u16LedOffset);
+  uint16_t getLedOffset() { return _u16LedOffset; }
+  void setLedOffset(uint16_t u16LedOffset) { _u16LedOffset = u16LedOffset; }
 
-  uint8_t getNumber();
-  void setNumber(uint8_t newNumber);
+  uint8_t getNumber() { return _u8Number; }
+  void setNumber(uint8_t newNumber) { _u8Number = newNumber; }
 
-  uint32_t getPeakLedDelay();
-  void setPeakLedDelay(uint32_t u32NewDelay);
+  uint32_t getPeakLedDelay() { return _u32PeakLedDelay; }
+  void setPeakLedDelay(uint32_t u32NewDelay) { _u32PeakLedDelay = u32NewDelay; }
 
-  uint8_t getLevel();
+  TstRGB &getLedColor(uint16_t u16Number) { return _mLedColor[u16Number]; }
+  uint8_t getLevel() { return _u8Level; }
+  void setLedCountDir(EnLedCountDir enNewDir) { _enCountDir = enNewDir; }
+
   void updateBandLevel(uint8_t newLevel);
-
-  TstRGB &getLedColor(uint16_t u16Led);
-  void setLedCountDir(EnLedCountDir enNewDir);
   uint16_t getHardwareLedNumber(uint16_t u16CurrentLed);
 };

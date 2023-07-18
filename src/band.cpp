@@ -3,8 +3,7 @@
 #include "band.h"
 #include "analyzerWiFi.h"
 #include "tools.h"
-
-constexpr uint32_t DEFAULT_REFRESH_TIME_PEAK_LED = 100; // in [ms]
+#include "defaults.h"
 
 // #####################################################################
 //                   public
@@ -29,51 +28,6 @@ Band::Band(std::shared_ptr<Adafruit_NeoPixel> ledControl,
     this->_mLedColor.insert(std::pair<uint16_t, TstRGB>(u16CurrentLed, TstRGB()));
 }
 
-uint16_t Band::getNumOfLEDs()
-{
-  return this->_u16NumOfLEDs;
-}
-
-void Band::setLedOffset(uint16_t u16LedOffset)
-{
-  this->_u16LedOffset = u16LedOffset;
-}
-
-uint16_t Band::getLedOffset()
-{
-  return this->_u16LedOffset;
-}
-
-void Band::setNumOfLEDs(uint16_t &newNumberOfLeds)
-{
-  this->_u16NumOfLEDs = newNumberOfLeds;
-}
-
-uint8_t Band::getNumber()
-{
-  return this->_u8Number;
-}
-
-void Band::setNumber(uint8_t newNumber)
-{
-  this->_u8Number = newNumber;
-}
-
-uint32_t Band::getPeakLedDelay()
-{
-  return this->_u32PeakLedDelay;
-}
-
-void Band::setPeakLedDelay(uint32_t u32NewDelay)
-{
-  this->_u32PeakLedDelay = u32NewDelay;
-}
-
-uint8_t Band::getLevel()
-{
-  return this->_u8Level;
-}
-
 void Band::updateBandLevel(uint8_t newLevel)
 {
   constexpr uint8_t PROZENT_MAX = 100; //[%]
@@ -94,16 +48,6 @@ void Band::updateBandLevel(uint8_t newLevel)
       resetLedColor(it->second);
   }
   this->updatePeakLED(currentLedLevel);
-}
-
-TstRGB &Band::getLedColor(uint16_t u16Number)
-{
-  return this->_mLedColor[u16Number];
-}
-
-void Band::setLedCountDir(EnLedCountDir enNewDir)
-{
-  this->_enCountDir = enNewDir;
 }
 
 uint16_t Band::getHardwareLedNumber(uint16_t u16CurrentLed)

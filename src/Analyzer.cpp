@@ -3,15 +3,10 @@
 #include "led.h"
 #include "analyzerWiFi.h"
 #include "tools.h"
-
-constexpr uint8_t DEFAULT_BRIGHTNESS = 30; //[%]
+#include "defaults.h"
 
 void Analyzer::setup()
 {
-  StHtmlValues html{};
-  html.u8Brightness = DEFAULT_BRIGHTNESS;
-  setHtmlValues(html);
-
   for (const auto &band : _bands)
   {
     std::shared_ptr<Adafruit_NeoPixel> strip = band->getStrip();
