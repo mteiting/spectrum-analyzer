@@ -3,30 +3,17 @@
 #include "led.h"
 #include "analyzerWiFi.h"
 #include "tools.h"
-
-constexpr uint8_t DEFAULT_BRIGHTNESS = 30; //[%]
-
-Analyzer::Analyzer(std::shared_ptr<Adafruit_NeoPixel> ledControl) : _ledControl(ledControl)
-{
-  if (_ledControl == nullptr)
-    Serial.println("was not able to create ledControl");
-}
-
-Analyzer::~Analyzer()
-{
-}
+#include "defaults.h"
 
 void Analyzer::setup()
 {
-  if (_ledControl == nullptr)
-    return;
-  StHtmlValues html{};
-  html.u8Brightness = DEFAULT_BRIGHTNESS;
-  setHtmlValues(html);
-
-  _ledControl->begin();
-  _ledControl->show();
-  _ledControl->setBrightness(getHtmlValues().u8Brightness);
+  for (const auto &band : _bands)
+  {
+    std::shared_ptr<Adafruit_NeoPixel> strip = band->getStrip();
+    strip->begin();
+    strip->show();
+    strip->setBrightness(getHtmlValues().u8Brightness);
+  }
 }
 
 std::vector<std::shared_ptr<Band>> Analyzer::getBands()
@@ -34,7 +21,7 @@ std::vector<std::shared_ptr<Band>> Analyzer::getBands()
   return this->_bands;
 }
 
-void Analyzer::setBand(std::shared_ptr<Band>& newBand)
+void Analyzer::setBand(std::shared_ptr<Band> &newBand)
 {
   if (newBand == nullptr)
     return;
@@ -43,22 +30,20 @@ void Analyzer::setBand(std::shared_ptr<Band>& newBand)
 
 void Analyzer::loop(std::vector<uint8_t> &newLevel)
 {
-  if (_ledControl == nullptr)
-    return;
-
-  _ledControl->setBrightness(getHtmlValues().u8Brightness);
-  for (const auto &strip : _bands)
+  for (const auto &band : _bands)
   {
-    strip->setPeakLedDelay(getHtmlValues().u32PeakLedDelay);
-    strip->updateBandLevel(newLevel.at(strip->getNumber()));
+    std::shared_ptr<Adafruit_NeoPixel> strip = band->getStrip();
+    strip->setBrightness(getHtmlValues().u8Brightness);
+    band->setPeakLedDelay(getHtmlValues().u32PeakLedDelay);
+    band->updateBandLevel(newLevel.at(band->getNumber()));
 
-    uint16_t u16NumOfLed = strip->getNumOfLEDs();
+    uint16_t u16NumOfLed = band->getNumOfLEDs();
     for (uint16_t led = 0; led < u16NumOfLed; led++)
     {
-      TstRGB rgb = strip->getLedColor(led);
-      _ledControl->setPixelColor(strip->getHardwareLedNumber(led),
-                                 _ledControl->Color(rgb.red, rgb.green, rgb.blue));
+      TstRGB rgb = band->getLedColor(led);
+      strip->setPixelColor(band->getHardwareLedNumber(led),
+                           strip->Color(rgb.red, rgb.green, rgb.blue));
     }
+    strip->show();
   }
-  _ledControl->show();
 }

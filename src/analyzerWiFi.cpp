@@ -6,6 +6,7 @@
 #include <ESPAsyncWebServer.h>
 #include "analyzerWiFi.h"
 #include "html.h"
+#include "defaults.h"
 
 const char *ssid = "SpectrumAnalyzer";
 const char *password = "1234567890";
@@ -52,6 +53,15 @@ static void setupServer()
             {
             if (request->hasParam(PARAM_INPUT)){
               mglHtmlValues.u32PeakLedDelay = request->getParam(PARAM_INPUT)->value().toInt();
+            }
+            request->send(200, "text/html", index_html); 
+            request->redirect("/"); });
+
+  server.on("/get_micGain", HTTP_GET, [](AsyncWebServerRequest *request)
+            {
+            if (request->hasParam(PARAM_INPUT)){
+              mglHtmlValues.fGain = DEFAULT_GAIN + (request->getParam(PARAM_INPUT)->value().toFloat() / 100);
+              Serial.println(mglHtmlValues.fGain);
             }
             request->send(200, "text/html", index_html); 
             request->redirect("/"); });

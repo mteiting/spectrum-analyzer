@@ -18,12 +18,11 @@ public:
 class Analyzer : public IAnalyzer
 {
 private:
-  std::shared_ptr<Adafruit_NeoPixel> _ledControl;
   std::vector<std::shared_ptr<Band>> _bands;
 
 public:
-  Analyzer(std::shared_ptr<Adafruit_NeoPixel> ledControl);
-  virtual ~Analyzer();
+  Analyzer() = default;
+  virtual ~Analyzer() = default;
   void setup() override;
   std::vector<std::shared_ptr<Band>> getBands() override;
   void setBand(std::shared_ptr<Band> &newBand) override;
