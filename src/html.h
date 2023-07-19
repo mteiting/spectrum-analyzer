@@ -70,6 +70,26 @@ const char index_html[] PROGMEM = R"rawliteral(
       }
       </script>
 
+      <h2> Testing </h2>
+      <button onclick="testStart()">Start LED Test</button>
+      <script>
+      function testStart() {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "/test_start");
+        xhr.send();
+      }
+      </script>
+
+      <h2> simulation </h2>
+      <button onclick="simStart()">Start Simulation</button>
+      <script>
+      function simStart() {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "/sim_start");
+        xhr.send();
+      }
+      </script>
+
       <h2> wifi scan </h2>
       <button onclick="scanWifi()">SCAN WIFI</button>
       <script>

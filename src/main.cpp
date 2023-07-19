@@ -6,6 +6,7 @@
 #include "led.h"
 #include "band.h"
 #include "analyzerWiFi.h"
+#include "tools.h"
 
 std::shared_ptr<Adafruit_NeoPixel> _strip = nullptr;
 std::shared_ptr<Analyzer> _analyzer = nullptr;
@@ -37,9 +38,57 @@ void setup()
   _analyzer->setup();
 }
 
+void simulationTask()
+{
+  static std::vector<uint8_t> vSimValues(BANDS, 0);
+  static uint32_t u32TimerSimulation = millis();
+
+  if (false == isTimeExpired(u32TimerSimulation, 200))
+    return;
+  for (auto &band : vSimValues)
+  {
+    band = (uint8_t)(1 + (rand() % 100));
+  }
+  _analyzer->loop(vSimValues);
+}
+
+void ledTest()
+{
+  constexpr uint8_t STEPS = 5;
+  static std::vector<uint8_t> vSimValues(BANDS, 0);
+  static uint32_t u32TimerSimulation = millis();
+  static uint8_t u8LastBand = 0;
+  static uint8_t u8CurrentBand = 0;
+
+  if (vSimValues[u8LastBand] && u8CurrentBand != u8LastBand)
+    vSimValues[u8LastBand] -= STEPS;
+
+  vSimValues[u8CurrentBand] += STEPS;
+  if (vSimValues[u8CurrentBand] >= 100)
+  {
+    u8LastBand = u8CurrentBand;
+    u8CurrentBand++;
+    if (u8CurrentBand >= BANDS)
+      u8CurrentBand = 0;
+  }
+  _analyzer->loop(vSimValues);
+}
+
 void loop()
 {
-  analyzerFFT_Task();
-  _analyzer->loop(getBandsFromFFT());
   WifiTask();
+
+  if (getHtmlValues().bSimulationStart)
+  {
+    simulationTask();
+  }
+  else if (getHtmlValues().bLedTestStart)
+  {
+    ledTest();
+  }
+  else
+  {
+    analyzerFFT_Task();
+    _analyzer->loop(getBandsFromFFT());
+  }
 }

@@ -66,6 +66,20 @@ static void setupServer()
             request->send(200, "text/html", index_html); 
             request->redirect("/"); });
 
+  server.on("/test_start", HTTP_GET, [](AsyncWebServerRequest *request)
+            { 
+            mglHtmlValues.bLedTestStart = !mglHtmlValues.bLedTestStart;
+            mglHtmlValues.bSimulationStart = false;
+            request->send(200, "text/html", index_html); 
+            request->redirect("/"); });
+
+  server.on("/sim_start", HTTP_GET, [](AsyncWebServerRequest *request)
+            { 
+            mglHtmlValues.bSimulationStart = !mglHtmlValues.bSimulationStart;
+            mglHtmlValues.bLedTestStart = false;
+            request->send(200, "text/html", index_html); 
+            request->redirect("/"); });
+
   server.on("/scan_wifi", HTTP_GET, [](AsyncWebServerRequest *request)
             { 
             mglHtmlValues.bScanForWifi = true;

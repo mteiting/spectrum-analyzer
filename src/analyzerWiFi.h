@@ -5,6 +5,8 @@
 struct StHtmlValues
 {
   bool bScanForWifi{false};
+  bool bSimulationStart{false};
+  bool bLedTestStart{false};
   uint8_t u8Brightness{DEFAULT_BRIGHTNESS};
   float fGain{DEFAULT_GAIN};
   uint32_t u32PeakLedDelay{DEFAULT_REFRESH_TIME_PEAK_LED};
