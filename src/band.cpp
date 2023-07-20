@@ -19,9 +19,20 @@ Band::Band(std::shared_ptr<Adafruit_NeoPixel> ledControl,
       _u16NumOfLEDs(u16NumOfLEDs),
       _u16LedOffset(u16OffsetLED),
       _enCountDir(enCountDir),
-      _u32PeakLedDelay(DEFAULT_REFRESH_TIME_PEAK_LED),
-      _u8Level(0),
-      _u16PeakLED(0),
+      _timerPeakLedRefresh(millis())
+{
+  for (uint16_t u16CurrentLed = 0; u16CurrentLed < _u16NumOfLEDs; u16CurrentLed++)
+    this->_mLedColor.insert(std::pair<uint16_t, TstRGB>(u16CurrentLed, TstRGB()));
+}
+
+Band::Band(std::shared_ptr<Adafruit_NeoPixel> ledControl,
+           uint8_t u8Number,
+           uint16_t u16OffsetLED,
+           uint16_t u16NumOfLEDs)
+    : _ledControl(ledControl),
+      _u8Number(u8Number),
+      _u16NumOfLEDs(u16NumOfLEDs),
+      _u16LedOffset(u16OffsetLED),
       _timerPeakLedRefresh(millis())
 {
   for (uint16_t u16CurrentLed = 0; u16CurrentLed < _u16NumOfLEDs; u16CurrentLed++)

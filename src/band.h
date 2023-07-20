@@ -16,14 +16,14 @@ private:
   std::shared_ptr<Adafruit_NeoPixel> _ledControl;
 
   std::map<uint16_t, TstRGB> _mLedColor;
-  uint16_t _u16NumOfLEDs;
-  uint16_t _u16LedOffset;
-  uint16_t _u16PeakLED;
-  uint8_t _u8Number;
-  uint8_t _u8Level; // in %
-  EnLedCountDir _enCountDir;
-  uint32_t _u32PeakLedDelay; //[ms]
-  uint32_t _timerPeakLedRefresh;
+  uint16_t _u16NumOfLEDs{0};
+  uint16_t _u16LedOffset{0};
+  uint16_t _u16PeakLED{0};
+  uint8_t _u8Number{0};
+  uint8_t _u8Level{0}; // in %
+  EnLedCountDir _enCountDir{EnLedCountDir::enLedCountDir_Down};
+  uint32_t _u32PeakLedDelay{0}; //[ms]
+  uint32_t _timerPeakLedRefresh{0};
 
   void updatePeakLED(uint8_t u8CurrentLedLevel);
 
@@ -34,6 +34,10 @@ public:
        uint16_t u16OffsetLED,
        uint16_t u16NumOfLEDs,
        EnLedCountDir enCountDir);
+  Band(std::shared_ptr<Adafruit_NeoPixel> ledControl,
+       uint8_t u8Number,
+       uint16_t u16OffsetLED,
+       uint16_t u16NumOfLEDs);
   virtual ~Band(){};
 
   inline std::shared_ptr<Adafruit_NeoPixel> &getStrip() { return _ledControl; }

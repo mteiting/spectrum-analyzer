@@ -8,7 +8,6 @@
 #include "analyzerWiFi.h"
 #include "tools.h"
 
-std::shared_ptr<Adafruit_NeoPixel> _strip = nullptr;
 std::shared_ptr<Analyzer> _analyzer = nullptr;
 
 void setup()
@@ -18,16 +17,23 @@ void setup()
   analyzerFFT_Setup();
   setupWifi();
 
-  _strip = std::make_shared<Adafruit_NeoPixel>(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
-  _analyzer = std::make_shared<Analyzer>();
+  std::shared_ptr<Adafruit_NeoPixel> _strip1 = std::make_shared<Adafruit_NeoPixel>(LED_COUNT, BAND_1_PIN, NEO_GRB + NEO_KHZ800);
+  std::shared_ptr<Adafruit_NeoPixel> _strip2 = std::make_shared<Adafruit_NeoPixel>(LED_COUNT, BAND_2_PIN, NEO_GRB + NEO_KHZ800);
+  std::shared_ptr<Adafruit_NeoPixel> _strip3 = std::make_shared<Adafruit_NeoPixel>(LED_COUNT, BAND_3_PIN, NEO_GRB + NEO_KHZ800);
+  std::shared_ptr<Adafruit_NeoPixel> _strip4 = std::make_shared<Adafruit_NeoPixel>(LED_COUNT, BAND_4_PIN, NEO_GRB + NEO_KHZ800);
+  std::shared_ptr<Adafruit_NeoPixel> _strip5 = std::make_shared<Adafruit_NeoPixel>(LED_COUNT, BAND_5_PIN, NEO_GRB + NEO_KHZ800);
+  std::shared_ptr<Adafruit_NeoPixel> _strip6 = std::make_shared<Adafruit_NeoPixel>(LED_COUNT, BAND_6_PIN, NEO_GRB + NEO_KHZ800);
+  std::shared_ptr<Adafruit_NeoPixel> _strip7 = std::make_shared<Adafruit_NeoPixel>(LED_COUNT, BAND_7_PIN, NEO_GRB + NEO_KHZ800);
 
-  std::shared_ptr<Band> band1 = std::make_shared<Band>(_strip, 0, 0, 20, EnLedCountDir::enLedCountDir_Top);
-  std::shared_ptr<Band> band2 = std::make_shared<Band>(_strip, 1, 20, 20, EnLedCountDir::enLedCountDir_Down);
-  std::shared_ptr<Band> band3 = std::make_shared<Band>(_strip, 2, 40, 20, EnLedCountDir::enLedCountDir_Top);
-  std::shared_ptr<Band> band4 = std::make_shared<Band>(_strip, 3, 60, 20, EnLedCountDir::enLedCountDir_Down);
-  std::shared_ptr<Band> band5 = std::make_shared<Band>(_strip, 4, 80, 20, EnLedCountDir::enLedCountDir_Top);
-  std::shared_ptr<Band> band6 = std::make_shared<Band>(_strip, 5, 100, 20, EnLedCountDir::enLedCountDir_Down);
-  std::shared_ptr<Band> band7 = std::make_shared<Band>(_strip, 6, 120, 20, EnLedCountDir::enLedCountDir_Top);
+  std::shared_ptr<Band> band1 = std::make_shared<Band>(_strip1, 0, 0, 20);
+  std::shared_ptr<Band> band2 = std::make_shared<Band>(_strip2, 1, 0, 20);
+  std::shared_ptr<Band> band3 = std::make_shared<Band>(_strip3, 2, 0, 20);
+  std::shared_ptr<Band> band4 = std::make_shared<Band>(_strip4, 3, 0, 20);
+  std::shared_ptr<Band> band5 = std::make_shared<Band>(_strip5, 4, 0, 20);
+  std::shared_ptr<Band> band6 = std::make_shared<Band>(_strip6, 5, 0, 20);
+  std::shared_ptr<Band> band7 = std::make_shared<Band>(_strip7, 6, 0, 20);
+
+  _analyzer = std::make_shared<Analyzer>();
   _analyzer->setBand(band1);
   _analyzer->setBand(band2);
   _analyzer->setBand(band3);
