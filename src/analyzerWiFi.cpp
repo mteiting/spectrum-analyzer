@@ -7,6 +7,7 @@
 #include "analyzerWiFi.h"
 #include "html.h"
 #include "defaults.h"
+#include "FileHandling.h"
 
 const char *ssid = "SpectrumAnalyzer";
 const char *password = "1234567890";
@@ -53,6 +54,7 @@ static void setupServer()
             {
             if (request->hasParam(PARAM_INPUT)){
               mglHtmlValues.u32PeakLedDelay = request->getParam(PARAM_INPUT)->value().toInt();
+              FileHandlingSaveHtml(mglHtmlValues);
             }
             request->send(200, "text/html", index_html); 
             request->redirect("/"); });
@@ -61,7 +63,7 @@ static void setupServer()
             {
             if (request->hasParam(PARAM_INPUT)){
               mglHtmlValues.fGain = DEFAULT_GAIN + (request->getParam(PARAM_INPUT)->value().toFloat() / 100);
-              Serial.println(mglHtmlValues.fGain);
+              FileHandlingSaveHtml(mglHtmlValues);
             }
             request->send(200, "text/html", index_html); 
             request->redirect("/"); });
@@ -101,6 +103,7 @@ static void setupServer()
             if (request->hasParam(PARAM_INPUT)) {
               String sliderValue = request->getParam(PARAM_INPUT)->value();
               mglHtmlValues.u8Brightness = sliderValue.toInt();
+              FileHandlingSaveHtml(mglHtmlValues);
             }
             request->send(200, "text/plain", "OK"); });
 

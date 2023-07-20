@@ -7,6 +7,7 @@
 #include "band.h"
 #include "analyzerWiFi.h"
 #include "tools.h"
+#include "FileHandling.h"
 
 std::shared_ptr<Analyzer> _analyzer = nullptr;
 
@@ -14,6 +15,7 @@ void setup()
 {
   Serial.begin(115200);
 
+  FileHandlingSetup();
   analyzerFFT_Setup();
   setupWifi();
 
