@@ -24,6 +24,7 @@ static void scanForWifiNetworks()
   uint16_t u16NumOfWifiNetworks = WiFi.scanNetworks();
   for (uint8_t u8CurrentWifi = 0; u8CurrentWifi < u16NumOfWifiNetworks; u8CurrentWifi++)
   {
+    Seria
     std::string newWifi = std::string(WiFi.SSID(u8CurrentWifi).c_str());
     mglsWifiList.append(newWifi);
     mglsWifiList += "##";
@@ -32,7 +33,17 @@ static void scanForWifiNetworks()
 
 static void notFound(AsyncWebServerRequest *request)
 {
-  request->send(404, "text/plain", "Not found");
+  request->send(404, "text/plain", "NOT FOUND");
+}
+
+static void badRequest(AsyncWebServerRequest *request)
+{
+  request->send(400, "text/plain", "BAD REQUEST");
+}
+
+static void ok(AsyncWebServerRequest *request)
+{
+  request->send(200, "text/plain", "OK");
 }
 
 static String sliderBrightnessValue(const String &var)
@@ -44,69 +55,89 @@ static String sliderBrightnessValue(const String &var)
 
 static void setupServer()
 {
-  IPAddress IP = WiFi.softAPIP();
-  Serial.print("AP IP address: ");
-  Serial.println(IP);
-
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send_P(200, "text/html", index_html); });
 
-  server.on("/get_peakDelay", HTTP_GET, [](AsyncWebServerRequest *request)
+  server.on("/peakDelay", HTTP_POST, [](AsyncWebServerRequest *request)
             {
-            if (request->hasParam(PARAM_INPUT)){
+            if (!request->hasParam(PARAM_INPUT)){
+              badRequest(request);
+            } else {
               mglHtmlValues.u32PeakLedDelay = request->getParam(PARAM_INPUT)->value().toInt();
               FileHandlingSaveHtml(mglHtmlValues);
-            }
-            request->send(200, "text/html", index_html); 
-            request->redirect("/"); });
+              ok(request);  
+            }});
 
-  server.on("/get_micGain", HTTP_GET, [](AsyncWebServerRequest *request)
+  server.on("/micGain", HTTP_POST, [](AsyncWebServerRequest *request)
             {
-            if (request->hasParam(PARAM_INPUT)){
+            if (!request->hasParam(PARAM_INPUT)){
+              badRequest(request);
+            } else {
               mglHtmlValues.fGain = DEFAULT_GAIN + (request->getParam(PARAM_INPUT)->value().toFloat() / 100);
               FileHandlingSaveHtml(mglHtmlValues);
-            }
-            request->send(200, "text/html", index_html); 
-            request->redirect("/"); });
+              ok(request);
+            }});
 
-  server.on("/test_start", HTTP_GET, [](AsyncWebServerRequest *request)
+  server.on("/test_start", HTTP_POST, [](AsyncWebServerRequest *request)
             { 
             mglHtmlValues.bLedTestStart = !mglHtmlValues.bLedTestStart;
             mglHtmlValues.bSimulationStart = false;
-            request->send(200, "text/html", index_html); 
-            request->redirect("/"); });
+            ok(request); });
 
-  server.on("/sim_start", HTTP_GET, [](AsyncWebServerRequest *request)
+  server.on("/sim_start", HTTP_POST, [](AsyncWebServerRequest *request)
             { 
             mglHtmlValues.bSimulationStart = !mglHtmlValues.bSimulationStart;
             mglHtmlValues.bLedTestStart = false;
-            request->send(200, "text/html", index_html); 
-            request->redirect("/"); });
+            ok(request); });
 
-  server.on("/scan_wifi", HTTP_GET, [](AsyncWebServerRequest *request)
+  server.on("/wifi", HTTP_POST, [](AsyncWebServerRequest *request)
             { 
             mglHtmlValues.bScanForWifi = true;
-            request->send(200, "text/html", index_html); 
-            request->redirect("/"); });
+            Serial.println("start wifi scan");
+            ok(request); });
 
-  server.on("/get_wifi", HTTP_GET, [](AsyncWebServerRequest *request)
+  server.on("/wifi", HTTP_GET, [](AsyncWebServerRequest *request)
             { 
-            if(mglsWifiList.empty())
-              return;
-            request->send(200, "text/plain", mglsWifiList.c_str()); 
-            mglsWifiList.erase(); });
+            if(mglsWifiList.empty()){
+              request->send(204, "text/plain", ""); 
+            } else {
+              Serial.println(mglsWifiList.c_str());
+              request->send(200, "text/plain", mglsWifiList.c_str()); 
+              mglsWifiList = "";
+            }});
 
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send_P(200, "text/html", index_html, sliderBrightnessValue); });
-
-  server.on("/slider", HTTP_GET, [](AsyncWebServerRequest *request)
+  server.on("/brightness", HTTP_POST, [](AsyncWebServerRequest *request)
             {
-            if (request->hasParam(PARAM_INPUT)) {
+            if (!request->hasParam(PARAM_INPUT)) {
+              badRequest(request);
+            } else {
               String sliderValue = request->getParam(PARAM_INPUT)->value();
               mglHtmlValues.u8Brightness = sliderValue.toInt();
               FileHandlingSaveHtml(mglHtmlValues);
-            }
-            request->send(200, "text/plain", "OK"); });
+              ok(request);
+            } });
+
+server.on("/settings", HTTP_GET, [](AsyncWebServerRequest *request)
+            {
+            String response = String(mglHtmlValues.u8Brightness) + "\n";
+            response += String((mglHtmlValues.fGain - DEFAULT_GAIN) * 100, 0) + "\n";
+            response += String(mglHtmlValues.u32PeakLedDelay);
+            request->send(200, "text/plain", response.c_str()); });
+
+server.on("/wifiConnect", HTTP_POST, [](AsyncWebServerRequest *request)
+            {
+            if (!request->hasParam("ssid") || !request->hasParam("password")) {
+              Serial.println("/wifiConnect - 400");
+              request->send(400, "text/plain", "NETWORK OR PASSWORD MISSING"); 
+            } else {
+              String password = request->getParam("password")->value();
+              String ssid = request->getParam("ssid")->value();
+              mglHtmlValues.wifiPW = password;
+              mglHtmlValues.wifiSSID = ssid;
+              mglHtmlValues.bReconnectWifi = true;
+              FileHandlingSaveHtml(mglHtmlValues);
+              ok(request);
+            } });
 
   server.onNotFound(notFound);
   server.begin();
@@ -121,19 +152,20 @@ static void setupAccessPoint()
 }
 
 static wl_status_t setupStation()
-{
+{  
   uint32_t u32TimerWlanConnet = 0;
   Serial.println("init Station mode ...");
   WiFi.mode(WIFI_STA);
   WiFi.begin(
       mglHtmlValues.wifiSSID.c_str(),
       mglHtmlValues.wifiPW.c_str());
-  Serial.println("connecting");
+  Serial.println("connecting...");
 
   while (WiFi.status() != WL_CONNECTED)
   {
-    if (isTimeExpired(u32TimerWlanConnet, 10000))
+    if (isTimeExpired(u32TimerWlanConnet, 10000)){
       return WL_CONNECT_FAILED;
+    }
     Serial.print(".");
     delay(100);
   }
@@ -165,8 +197,6 @@ void setHtmlValues(StHtmlValues &newHtmlValues)
 
 void setupWifi()
 {
-  mglHtmlValues.wifiSSID = "RT-Labor-1";
-  mglHtmlValues.wifiPW = "hardies42";
   if (mglHtmlValues.wifiSSID.isEmpty())
     setupAccessPoint();
   else if (WL_CONNECTED != setupStation())
@@ -179,4 +209,9 @@ void WifiTask()
 {
   if (mglHtmlValues.bScanForWifi)
     scanForWifiNetworks();
+
+  if (mglHtmlValues.bReconnectWifi){
+    mglHtmlValues.bReconnectWifi = false;
+    esp_restart(); // reboot tut gut
+  }    
 }
