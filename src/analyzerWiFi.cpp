@@ -17,15 +17,20 @@ static AsyncWebServer server(80);
 static StHtmlValues mglHtmlValues = {};
 static std::string mglsWifiList = "";
 
-static void scanForWifiNetworks()
+static void scanForWifiNetworks()    
 {
   mglHtmlValues.bScanForWifi = false;
+  std::vector<std::string> vSsids;
 
-  uint16_t u16NumOfWifiNetworks = WiFi.scanNetworks();
-  for (uint8_t u8CurrentWifi = 0; u8CurrentWifi < u16NumOfWifiNetworks; u8CurrentWifi++)
+  int16_t i16NumOfWifiNetworks = WiFi.scanNetworks();
+  
+  for (uint8_t u8CurrentWifi = 0; u8CurrentWifi < i16NumOfWifiNetworks; u8CurrentWifi++)
   {
-    Seria
     std::string newWifi = std::string(WiFi.SSID(u8CurrentWifi).c_str());
+    if (std::find(vSsids.begin(), vSsids.end(), newWifi) != vSsids.end())
+      continue;
+
+    vSsids.push_back(newWifi);
     mglsWifiList.append(newWifi);
     mglsWifiList += "##";
   }
@@ -93,7 +98,6 @@ static void setupServer()
   server.on("/wifi", HTTP_POST, [](AsyncWebServerRequest *request)
             { 
             mglHtmlValues.bScanForWifi = true;
-            Serial.println("start wifi scan");
             ok(request); });
 
   server.on("/wifi", HTTP_GET, [](AsyncWebServerRequest *request)
@@ -101,7 +105,6 @@ static void setupServer()
             if(mglsWifiList.empty()){
               request->send(204, "text/plain", ""); 
             } else {
-              Serial.println(mglsWifiList.c_str());
               request->send(200, "text/plain", mglsWifiList.c_str()); 
               mglsWifiList = "";
             }});
@@ -127,7 +130,6 @@ server.on("/settings", HTTP_GET, [](AsyncWebServerRequest *request)
 server.on("/wifiConnect", HTTP_POST, [](AsyncWebServerRequest *request)
             {
             if (!request->hasParam("ssid") || !request->hasParam("password")) {
-              Serial.println("/wifiConnect - 400");
               request->send(400, "text/plain", "NETWORK OR PASSWORD MISSING"); 
             } else {
               String password = request->getParam("password")->value();
@@ -147,8 +149,10 @@ static void setupAccessPoint()
 {
   Serial.println("\ninit AP mode ...");
   WiFi.mode(WIFI_AP_STA);
-  if (true == WiFi.softAP(getSSID().c_str(), password))
+  if (true == WiFi.softAP(getSSID().c_str(), password)){
     Serial.println("AP is up");
+  }
+    
 }
 
 static wl_status_t setupStation()
@@ -159,11 +163,12 @@ static wl_status_t setupStation()
   WiFi.begin(
       mglHtmlValues.wifiSSID.c_str(),
       mglHtmlValues.wifiPW.c_str());
-  Serial.println("connecting...");
+  Serial.printf("connecting to %s\n", mglHtmlValues.wifiSSID.c_str());
 
   while (WiFi.status() != WL_CONNECTED)
   {
     if (isTimeExpired(u32TimerWlanConnet, 10000)){
+      WiFi.mode(WIFI_OFF);
       return WL_CONNECT_FAILED;
     }
     Serial.print(".");

@@ -145,7 +145,9 @@ const char index_html[] PROGMEM = R"rawliteral(
     </div>
 
     <div>
-      <button id="connectToWifi" onclick="connectToWifi()">Connect</button>
+      <button id="connectToWifi" onclick="connectToWifi()">
+        Connect
+      </button>
     </div>
 
     <script>
@@ -186,7 +188,7 @@ const char index_html[] PROGMEM = R"rawliteral(
 
       function scanWifi() {
         sendRequest("POST", "/wifi", () => {
-          setTimeout(null, 2000);
+          setTimeout(getWifiList(), 2000);
         });
       }
 
@@ -215,6 +217,10 @@ const char index_html[] PROGMEM = R"rawliteral(
         }
 
         for (let i = 0; i < wifiNetworks.length; i++) {
+          if (wifiNetworks[i].length == 0) {
+            continue;
+          }
+
           let newOption = document.createElement("option");
           newOption.value = wifiNetworks[i];
           newOption.text = wifiNetworks[i];
@@ -240,16 +246,22 @@ const char index_html[] PROGMEM = R"rawliteral(
       }
 
       function connectToWifi() {
-        let password = "hardies42"; // document.getElementById();
-        let ssid = "RT-Labor-1"; //document.getElementById();
+        let wifiList = document.getElementById("wifiList");
+        let passwordInput = document.getElementById("wifiPasswordInput");
+        let selectedOptions = wifiList.options;
+        let selectedIndex = selectedOptions.selectedIndex;
+
+        let selectedOption = selectedOptions[selectedIndex].value;
+        let password = passwordInput.value;
+
         sendRequest(
           "POST",
-          `/wifiConnect?ssid=${ssid}&password=${password}`,
+          `/wifiConnect?ssid=${selectedOption}&password=${password}`,
           console.log
         );
       }
 
-      setInterval(getWifiList, 1000);
+      setInterval(getWifiList, 5000);
 
       const initialize_page = () => {
         sendRequest("GET", "/settings", (response) => {
