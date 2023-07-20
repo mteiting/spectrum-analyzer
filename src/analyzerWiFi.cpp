@@ -8,6 +8,7 @@
 #include "html.h"
 #include "defaults.h"
 #include "FileHandling.h"
+#include "tools.h"
 
 const char *ssid = "SpectrumAnalyzer";
 const char *password = "1234567890";
@@ -113,10 +114,34 @@ static void setupServer()
 
 static void setupAccessPoint()
 {
-  Serial.println("init AP ...");
+  Serial.println("\ninit AP mode ...");
   WiFi.mode(WIFI_AP_STA);
   if (true == WiFi.softAP(getSSID().c_str(), password))
     Serial.println("AP is up");
+}
+
+static wl_status_t setupStation()
+{
+  uint32_t u32TimerWlanConnet = 0;
+  Serial.println("init Station mode ...");
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(
+      mglHtmlValues.wifiSSID.c_str(),
+      mglHtmlValues.wifiPW.c_str());
+  Serial.println("connecting");
+
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    if (isTimeExpired(u32TimerWlanConnet, 10000))
+      return WL_CONNECT_FAILED;
+    Serial.print(".");
+    delay(100);
+  }
+
+  Serial.println("\nConnected to the WiFi network");
+  Serial.print("ESP32 IP: ");
+  Serial.println(WiFi.localIP());
+  return WL_CONNECTED;
 }
 
 String getSSID()
@@ -140,7 +165,13 @@ void setHtmlValues(StHtmlValues &newHtmlValues)
 
 void setupWifi()
 {
-  setupAccessPoint();
+  mglHtmlValues.wifiSSID = "RT-Labor-1";
+  mglHtmlValues.wifiPW = "hardies42";
+  if (mglHtmlValues.wifiSSID.isEmpty())
+    setupAccessPoint();
+  else if (WL_CONNECTED != setupStation())
+    setupAccessPoint(); // do ap mode, if connection could not be established
+
   setupServer();
 }
 

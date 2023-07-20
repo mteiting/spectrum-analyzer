@@ -10,6 +10,8 @@ struct StHtmlValues
   uint8_t u8Brightness{DEFAULT_BRIGHTNESS};
   float fGain{DEFAULT_GAIN};
   uint32_t u32PeakLedDelay{DEFAULT_REFRESH_TIME_PEAK_LED};
+  String wifiSSID{""};
+  String wifiPW{""};
 };
 
 String getSSID();
