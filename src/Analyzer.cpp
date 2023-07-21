@@ -30,6 +30,7 @@ void Analyzer::setBand(std::shared_ptr<Band> &newBand)
 
 void Analyzer::loop(std::vector<uint8_t> &newLevel)
 {
+  static double dColorFade = getHtmlValues().dColorFadeOffset;
   for (const auto &band : _bands)
   {
     std::shared_ptr<Adafruit_NeoPixel> strip = band->getStrip();
@@ -45,5 +46,17 @@ void Analyzer::loop(std::vector<uint8_t> &newLevel)
                            strip->Color(rgb.red, rgb.green, rgb.blue));
     }
     strip->show();
+    band->setColorFader(dColorFade, DEFUALT_COLORFADER_RESOLUTION);
+  }
+
+  if (getHtmlValues().bFading)
+  {
+    dColorFade += 20;
+    if (dColorFade >= DEFUALT_COLORFADER_RESOLUTION)
+      dColorFade = 0;
+  }
+  else
+  {
+    dColorFade = getHtmlValues().dColorFadeOffset;
   }
 }

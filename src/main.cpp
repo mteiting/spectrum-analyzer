@@ -46,7 +46,7 @@ void setup()
   _analyzer->setup();
 }
 
-void simulationTask()
+static void simulationTask()
 {
   static std::vector<uint8_t> vSimValues(BANDS, 0);
   static uint32_t u32TimerSimulation = millis();
@@ -60,9 +60,9 @@ void simulationTask()
   _analyzer->loop(vSimValues);
 }
 
-void ledTest()
+static void ledTest()
 {
-  constexpr uint8_t STEPS = 5;
+  constexpr uint8_t STEPS = 1;
   static std::vector<uint8_t> vSimValues(BANDS, 0);
   static uint32_t u32TimerSimulation = millis();
   static uint8_t u8LastBand = 0;
@@ -82,18 +82,22 @@ void ledTest()
   _analyzer->loop(vSimValues);
 }
 
+static void toggleAll()
+{
+  std::vector<uint8_t> vSimValues(BANDS, 100);
+  _analyzer->loop(vSimValues);
+}
+
 void loop()
 {
   WifiTask();
 
   if (getHtmlValues().bSimulationStart)
-  {
     simulationTask();
-  }
   else if (getHtmlValues().bLedTestStart)
-  {
     ledTest();
-  }
+  else if (getHtmlValues().bAllToggle)
+    toggleAll();
   else
   {
     analyzerFFT_Task();

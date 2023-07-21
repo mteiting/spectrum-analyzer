@@ -54,7 +54,7 @@ void Band::updateBandLevel(uint8_t newLevel)
   for (it = _mLedColor.begin(); it != _mLedColor.end(); it++)
   {
     if (it->first < currentLedLevel)
-      getRGB4Level(it->second, it->first);
+      getRGB4Level(it->second, it->first, LED_COUNT, _dColorFader, _dColorFaderResolution);
     else
       resetLedColor(it->second);
   }

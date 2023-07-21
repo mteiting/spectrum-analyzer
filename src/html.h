@@ -111,6 +111,33 @@ const char index_html[] PROGMEM = R"rawliteral(
         />
       </div>
     </div>
+    
+    <h2>Color Offset</h2>
+    <div>
+      <p><span id="colorOffsetText">0</span></p>
+      <div class="input">
+        <input
+          type="range"
+          id="colorOffsetSlider"
+          value="0"
+          onchange="updateColorOffset()"
+          min="0"
+          max="500"
+          step="1"
+          class="slider"
+        />
+      </div>
+    </div>
+    
+    <h2>Fading</h2>
+    <div>
+      <button onclick="fadingToggle()">toggle fading</button>
+    </div>
+
+    <h2>All toggle</h2>
+    <div>
+      <button onclick="toggleAll()">Toggle toggleAll</button>
+    </div>
 
     <h2>Testing</h2>
     <div>
@@ -181,6 +208,11 @@ const char index_html[] PROGMEM = R"rawliteral(
         );
       }
 
+      function updateColorOffset() {
+        let colorFadeOffset= document.getElementById("colorOffsetSlider");
+        sendRequest("POST", `/colorFadeOffset?value=${colorFadeOffset.value}`, console.log);
+      }
+
       function updateMicGain() {
         let micGain = document.getElementById("micGainSlider");
         sendRequest("POST", `/micGain?value=${micGain.value}`, console.log);
@@ -192,12 +224,20 @@ const char index_html[] PROGMEM = R"rawliteral(
         });
       }
 
+      function toggleAll() {
+        sendRequest("POST", "/all_toggle", null);
+      }
+
       function simStart() {
         sendRequest("POST", "/sim_start", null);
       }
 
       function testStart() {
         sendRequest("POST", "/test_start", null);
+      }
+
+      function fadingToggle() {
+        sendRequest("POST", "/fading_toggle", null);
       }
 
       function propagate_wifi_list(response) {
@@ -270,6 +310,8 @@ const char index_html[] PROGMEM = R"rawliteral(
           let peakDelayInput = document.getElementById("peakLedDelay");
           let micGainSlider = document.getElementById("micGainSlider");
           let micGainText = document.getElementById("micGainText");
+          let colorOffsetSlider = document.getElementById("colorOffsetSlider");
+          let colorOffsetText = document.getElementById("colorOffsetText");
 
           if (response === "") {
             return;
@@ -281,6 +323,8 @@ const char index_html[] PROGMEM = R"rawliteral(
           micGainSlider.value = values[1];
           micGainText.textContent = values[1];
           peakDelayInput.value = values[2];
+          colorOffsetSlider.value = values[3];
+          colorOffsetText.textContent = values[3];
         });
       };
 
@@ -297,9 +341,16 @@ const char index_html[] PROGMEM = R"rawliteral(
           micGainText.textContent = event.target.value;
         });
 
+        let colorOffsetSlider = document.getElementById("colorOffsetSlider");
+        let colorOffsetText = document.getElementById("colorOffsetText");
+        colorOffsetSlider.addEventListener("input", (event) => {
+          colorOffsetText.textContent = event.target.value;
+        });
+
         initialize_page();
       };
     </script>
   </body>
 </html>
+
 )rawliteral";

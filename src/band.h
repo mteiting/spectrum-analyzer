@@ -3,24 +3,27 @@
 #include <memory>
 #include <Adafruit_NeoPixel.h>
 #include "led.h"
+#include "defaults.h"
 
 enum class EnLedCountDir
 {
   enLedCountDir_Top = 0,
   enLedCountDir_Down
 };
-
 class Band
 {
 private:
   std::shared_ptr<Adafruit_NeoPixel> _ledControl;
 
   std::map<uint16_t, TstRGB> _mLedColor;
+  std::map<uint16_t, TstRGB> _mLevelColor;
   uint16_t _u16NumOfLEDs{0};
   uint16_t _u16LedOffset{0};
   uint16_t _u16PeakLED{0};
   uint8_t _u8Number{0};
   uint8_t _u8Level{0}; // in %
+  double _dColorFader{0};
+  double _dColorFaderResolution{DEFUALT_COLORFADER_RESOLUTION};
   EnLedCountDir _enCountDir{EnLedCountDir::enLedCountDir_Down};
   uint32_t _u32PeakLedDelay{0}; //[ms]
   uint32_t _timerPeakLedRefresh{0};
@@ -44,6 +47,18 @@ public:
 
   inline uint16_t getNumOfLEDs() { return _u16NumOfLEDs; }
   inline void setNumOfLEDs(uint16_t &newNumberOfLeds) { _u16NumOfLEDs = newNumberOfLeds; }
+
+  inline void setColorFader(double dColorFader, double dColorFaderResolution)
+  {
+    _dColorFader = dColorFader;
+    _dColorFaderResolution = dColorFaderResolution;
+  }
+
+  inline void getColorFader(double &dColorFader, double &dColorFaderResolution)
+  {
+    dColorFader = _dColorFader;
+    dColorFaderResolution = _dColorFaderResolution;
+  }
 
   uint16_t getLedOffset() { return _u16LedOffset; }
   void setLedOffset(uint16_t u16LedOffset) { _u16LedOffset = u16LedOffset; }
