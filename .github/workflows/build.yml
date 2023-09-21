@@ -23,12 +23,26 @@ jobs:
       - name: Build PlatformIO Project
         run: platformio run
 
-      - run: echo "build_date=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_OUTPUT
-        id: get_date
+      - name: get new release version
+        id: get_new_version
+        run: |
+            BUILD_DATE=$(date +'%Y.%m')
+            LATEST_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
+            MAJOR_MINOR_LATEST=$(awk -F. '{ OFS = "." } ; { print $1,$2 }' <<< $LATEST_TAG)
+            NEW_PATCH="0"
 
+            if [[ "$BUILD_DATE" = "$MAJOR_MINOR_LATEST" ]];
+            then
+                PATCH_LATEST=awk -F. '{ print $3 }' <<< $LATEST_TAG
+                NEW_PATCH=$((PATCH_LATEST + 1))
+            fi
+            
+            echo "release_version="$BUILD_DATE"."$$NEW_PATCH" >> $GITHUB_OUTPUT
+
+        
       - uses: softprops/action-gh-release@v1
         with:
-            name: ${{ steps.get_date.outputs.build_date }}
-            tag_name: ${{ steps.get_date.outputs.build_date }}
+            name: ${{ steps.get_new_version.outputs.release_version }}
+            tag_name: ${{ steps.get_new_version.outputs.release_version }}
             files: |
                 .pio/build/nodemcu-32s/firmware.bin
