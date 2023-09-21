@@ -34,17 +34,11 @@ jobs:
             MAJOR_MINOR_LATEST=$(awk -F. '{ OFS = "." } ; { print $1,$2 }' <<< $LATEST_TAG)
             NEW_PATCH="0"
 
-            echo $MAJOR_MINOR_LATEST
-            echo $BUILD_DATE
-
             if [[ "$BUILD_DATE" = "$MAJOR_MINOR_LATEST" ]];
             then
-                PATCH_LATEST=awk -F. '{ print $3 }' <<< $LATEST_TAG
+                PATCH_LATEST=$(awk -F. '{ print $3 }') <<< $LATEST_TAG
                 NEW_PATCH=$((PATCH_LATEST + 1))
             fi
-
-            echo $PATCH_LATEST
-            echo $NEW_PATCH
             
             echo "release_version=$BUILD_DATE.$NEW_PATCH" >> $GITHUB_OUTPUT
         
