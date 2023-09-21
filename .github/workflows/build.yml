@@ -23,11 +23,14 @@ jobs:
       - name: Build PlatformIO Project
         run: platformio run
 
+      - uses: actions-ecosystem/action-get-latest-tag@v1
+        id: get-latest-tag
+
       - name: get new release version
         id: get_new_version
         run: |
             BUILD_DATE=$(date +'%Y.%m')
-            LATEST_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
+            LATEST_TAG=${{ steps.get-latest-tag.outputs.tag }}
             MAJOR_MINOR_LATEST=$(awk -F. '{ OFS = "." } ; { print $1,$2 }' <<< $LATEST_TAG)
             NEW_PATCH="0"
 
