@@ -25,7 +25,7 @@ jobs:
 
       - name: Get current date
         id: date
-        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+        run: echo "::set-output name=date::$(date +'%Y%m%d%H%M%S')"
 
       - uses: actions/upload-artifact@v3
         with:
