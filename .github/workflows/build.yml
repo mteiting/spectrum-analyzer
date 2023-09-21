@@ -23,12 +23,10 @@ jobs:
       - name: Build PlatformIO Project
         run: platformio run
 
-      - name: Get current date
-        id: date
-        run: echo "{date}={$(date +'%Y%m%d%H%M%S')}" >> $GITHUB_OUTPUT
+      - run: echo "{BUILD_DATE}={$(date +'%Y%m%d%H%M%S')}" >> $GITHUB_ENV
 
       - uses: actions/upload-artifact@v3
         with:
-            name: frimware-${{ steps.date.outputs.date }}
+            name: frimware-$BUILD_DATE
             path: |
                 .pio/build/nodemcu-32s/firmware.bin
