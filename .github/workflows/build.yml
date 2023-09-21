@@ -23,7 +23,7 @@ jobs:
       - name: Build PlatformIO Project
         run: platformio run
 
-      - run: echo "build_date={$(date +'%Y%m%d%H%M%S')}" >> $GITHUB_OUTPUT
+      - run: echo "build_date=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_OUTPUT
         id: get_date
 
       - uses: actions/upload-artifact@v3
