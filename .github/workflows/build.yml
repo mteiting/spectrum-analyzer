@@ -37,7 +37,7 @@ jobs:
                 NEW_PATCH=$((PATCH_LATEST + 1))
             fi
             
-            echo "release_version="$BUILD_DATE"."$$NEW_PATCH" >> $GITHUB_OUTPUT
+            echo "release_version=$BUILD_DATE.$$NEW_PATCH" >> $GITHUB_OUTPUT
 
         
       - uses: softprops/action-gh-release@v1
