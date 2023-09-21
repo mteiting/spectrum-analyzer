@@ -41,7 +41,6 @@ jobs:
             fi
             
             echo "release_version=$BUILD_DATE.$NEW_PATCH" >> $GITHUB_OUTPUT
-
         
       - uses: softprops/action-gh-release@v1
         with:
