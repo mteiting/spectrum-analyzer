@@ -27,5 +27,4 @@ jobs:
         with:
             name: frimware
             path: |
-                .pio/build/nodemcu-32s/firmware.elf
                 .pio/build/nodemcu-32s/firmware.bin
