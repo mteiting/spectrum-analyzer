@@ -26,8 +26,9 @@ jobs:
       - run: echo "build_date=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_OUTPUT
         id: get_date
 
-      - uses: actions/upload-artifact@v3
+      - uses: softprops/action-gh-release@v1
         with:
-            name: frimware-${{ steps.get_date.outputs.build_date }}
+            name: ${{ steps.get_date.outputs.build_date }}
+            tag_name: ${{ steps.get_date.outputs.build_date }}
             path: |
                 .pio/build/nodemcu-32s/firmware.bin
