@@ -1,0 +1,4 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "Power_Protection")(type "Legacy")(uri "/Users/michaelnienhaus/Downloads/Power_Protection/Power_Protection.lib")(options "")(descr "Power Connectors"))
+)
