@@ -7473,6 +7473,72 @@
 		)
 	)
 	(symbol
+		(lib_id "power:GND")
+		(at 53.34 176.53 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "a6e07b69-7956-492c-a4c6-bb2b57b21b82")
+		(property "Reference" "#PWR013"
+			(at 53.34 182.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 53.34 181.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 53.34 176.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 53.34 176.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 53.34 176.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "5f377f95-3c20-4ac8-a761-4d0f87686d9f")
+		)
+		(instances
+			(project "7Analyzer"
+				(path "/dceeb1a9-ad1e-485a-bb61-44ce6645b5a9"
+					(reference "#PWR013")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:+5V")
 		(at 91.44 19.05 0)
 		(unit 1)
@@ -8011,6 +8077,73 @@
 			(project ""
 				(path "/dceeb1a9-ad1e-485a-bb61-44ce6645b5a9"
 					(reference "#PWR02")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "PCM_SL_Pin_Headers:PINHD_1x1_Male")
+		(at 57.15 176.53 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "c73a2629-4564-4d6d-8564-6da76119e70d")
+		(property "Reference" "J12"
+			(at 59.69 175.2599 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "PINHD_1x1_Male"
+			(at 59.69 177.7999 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "MountingHole:MountingHole_3.5mm_Pad"
+			(at 58.42 179.07 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 57.15 170.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Pin Header male with pin space 2.54mm. Pin Count -1"
+			(at 57.15 176.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "0bd2cb45-3ec0-468b-b506-d02685681ebf")
+		)
+		(instances
+			(project "7Analyzer"
+				(path "/dceeb1a9-ad1e-485a-bb61-44ce6645b5a9"
+					(reference "J12")
 					(unit 1)
 				)
 			)
