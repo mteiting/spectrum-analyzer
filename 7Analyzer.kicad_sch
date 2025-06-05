@@ -2924,6 +2924,123 @@
 				)
 			)
 		)
+		(symbol "PCM_SL_Resistors:5.6k"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "R"
+				(at 0 5.08 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "5.6k"
+				(at 0 2.54 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal"
+				(at 0.889 -4.318 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0.508 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "5.6kΩ, 1/4W Resistor"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "Resistor"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "5.6k_0_1"
+				(rectangle
+					(start -2.286 0.889)
+					(end 2.286 -0.889)
+					(stroke
+						(width 0.24)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "5.6k_1_1"
+				(pin passive line
+					(at -3.81 0 0)
+					(length 1.5)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 3.81 0 180)
+					(length 1.5)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+			)
+		)
 		(symbol "power:+3.3V"
 			(power)
 			(pin_numbers hide)
@@ -3262,6 +3379,12 @@
 		)
 	)
 	(junction
+		(at 53.34 30.48)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "0072adc4-1a72-445c-9b11-71f0141ead8d")
+	)
+	(junction
 		(at 146.05 106.68)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -3494,6 +3617,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "e682cfd3-4edd-46a3-a81d-19b3d34b6b84")
+	)
+	(junction
+		(at 59.69 38.1)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "f5679fc4-cdd9-48d4-946a-9558e40baef3")
 	)
 	(junction
 		(at 142.24 67.31)
@@ -3939,6 +4068,16 @@
 		)
 		(uuid "098918da-9fab-4305-a52c-56f0dfc7792d")
 	)
+	(wire
+		(pts
+			(xy 41.91 25.4) (xy 43.18 25.4)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0bc97afb-1c8f-424a-9fa0-e7ea444dde31")
+	)
 	(bus
 		(pts
 			(xy 256.54 59.69) (xy 256.54 62.23)
@@ -3998,6 +4137,16 @@
 			(type default)
 		)
 		(uuid "137d9324-371f-4b0c-a30a-81180ee3cd28")
+	)
+	(wire
+		(pts
+			(xy 50.8 30.48) (xy 53.34 30.48)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "14343867-3aea-4a6d-90b7-edb52cd94dfe")
 	)
 	(bus
 		(pts
@@ -4099,6 +4248,16 @@
 		)
 		(uuid "27cb2617-3cb8-4474-bc2f-378211a374fc")
 	)
+	(wire
+		(pts
+			(xy 43.18 30.48) (xy 43.18 27.94)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "29159537-8599-436c-8f93-27b9acc73986")
+	)
 	(bus
 		(pts
 			(xy 256.54 97.79) (xy 256.54 100.33)
@@ -4158,6 +4317,16 @@
 			(type default)
 		)
 		(uuid "2f6a2212-b894-46c1-a68a-a8ab22a80a26")
+	)
+	(wire
+		(pts
+			(xy 43.18 27.94) (xy 41.91 27.94)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "330dd320-bfff-4de9-950a-79ce42aa4df1")
 	)
 	(wire
 		(pts
@@ -4361,6 +4530,16 @@
 	)
 	(wire
 		(pts
+			(xy 50.8 25.4) (xy 53.34 25.4)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4b6a7f9e-744e-4722-b65d-8c44e5a5e2a4")
+	)
+	(wire
+		(pts
 			(xy 242.57 80.01) (xy 254 80.01)
 		)
 		(stroke
@@ -4478,6 +4657,16 @@
 			(type default)
 		)
 		(uuid "593c52e6-66ad-4006-8466-5f3a0bf87721")
+	)
+	(wire
+		(pts
+			(xy 53.34 25.4) (xy 53.34 30.48)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5c929b42-a4bf-44ee-8f33-a9b82198a24b")
 	)
 	(wire
 		(pts
@@ -4949,6 +5138,16 @@
 		)
 		(uuid "a1c713cf-d5fe-4835-9476-84e596c8e73f")
 	)
+	(wire
+		(pts
+			(xy 53.34 38.1) (xy 59.69 38.1)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a45f8a7a-2ca5-42f5-a6fa-77d83eece51f")
+	)
 	(bus
 		(pts
 			(xy 256.54 41.91) (xy 256.54 44.45)
@@ -5331,6 +5530,16 @@
 	)
 	(wire
 		(pts
+			(xy 53.34 30.48) (xy 53.34 38.1)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d454bb7a-66d8-4ec7-8e32-0c4ce65f2c4b")
+	)
+	(wire
+		(pts
 			(xy 134.62 92.71) (xy 156.21 92.71)
 		)
 		(stroke
@@ -5649,17 +5858,6 @@
 		)
 		(uuid "ff354fc8-c7ef-4aae-917e-06a4750480ef")
 	)
-	(label "A37"
-		(at 187.96 -69.85 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "06fef63c-ca62-4602-ad05-d2dc43572393")
-	)
 	(label "A34"
 		(at 170.18 69.85 0)
 		(fields_autoplaced yes)
@@ -5670,149 +5868,6 @@
 			(justify left bottom)
 		)
 		(uuid "08b7b470-513a-42da-a044-c1cc7a3f1ed1")
-	)
-	(label "A12"
-		(at 269.24 73.66 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "0ab8eae1-6acc-44ce-a1be-9472d7ef1478")
-	)
-	(label "A13"
-		(at 171.45 33.02 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "0e8d7d20-9053-4fa0-8ec3-86179d59485d")
-	)
-	(label "A3"
-		(at 269.24 50.8 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "1001d652-9162-44bd-812a-a7018430e52d")
-	)
-	(label "A32"
-		(at 269.24 129.54 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "10d385c7-5d74-441e-8a16-917af7235b50")
-	)
-	(label "A5"
-		(at 269.24 55.88 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "1360a556-3fd1-4584-bfac-53a9084d5138")
-	)
-	(label "A31"
-		(at 269.24 127 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "13e85e9b-bee7-4d0b-a7a1-52c47bd4d1cf")
-	)
-	(label "A31"
-		(at 177.8 -46.99 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "195f82fe-0fd2-447b-9bdb-82b4585d9dc1")
-	)
-	(label "A22"
-		(at 269.24 104.14 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "1d2a1ed5-d1f0-4030-88ec-a7d0fe0f3186")
-	)
-	(label "A14"
-		(at 171.45 35.56 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "21327ec7-6058-4478-980e-9e131a96dcc6")
-	)
-	(label "A36"
-		(at 187.96 -67.31 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "273ae7b0-2fae-439c-97b9-897ff61253dc")
-	)
-	(label "A20"
-		(at 177.8 -62.23 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "2ad2d9f7-be77-4edd-880e-d9f98ae1cb6f")
-	)
-	(label "A33"
-		(at 269.24 132.08 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "2c4b2b79-fe1d-4593-968a-e787dbcac509")
-	)
-	(label "A24"
-		(at 177.8 -39.37 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "2d47a79a-4914-4c37-8d95-33cb82539f07")
 	)
 	(label "A15"
 		(at 170.18 64.77 0)
@@ -5847,28 +5902,6 @@
 		)
 		(uuid "38d9dec5-bdd8-4d34-b2c3-476b27114a7d")
 	)
-	(label "A30"
-		(at 269.24 124.46 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "3a019a66-06f9-42de-92dd-002217a625c1")
-	)
-	(label "A39"
-		(at 187.96 -52.07 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "40c0e84c-6fed-4388-b7d1-ab45b9e4dba8")
-	)
 	(label "A34"
 		(at 151.13 124.46 0)
 		(fields_autoplaced yes)
@@ -5890,17 +5923,6 @@
 			(justify left bottom)
 		)
 		(uuid "440e6fb5-65e7-4542-bbc8-4e6f0dfa4bab")
-	)
-	(label "A40"
-		(at 269.24 149.86 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "45b72759-cf48-4cde-b4a8-d1acf8c83553")
 	)
 	(label "A23"
 		(at 151.13 104.14 0)
@@ -5924,83 +5946,6 @@
 		)
 		(uuid "4662a37e-9706-471d-8961-159889df44c6")
 	)
-	(label "A12"
-		(at 177.8 -72.39 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "47902809-141f-40b7-b7d0-79dd2fc84f32")
-	)
-	(label "A26"
-		(at 269.24 114.3 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "4e7bef81-9ec1-4ec3-a800-1b7bc45738c5")
-	)
-	(label "A6"
-		(at 187.96 -39.37 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "56a0fa3a-433d-469b-a6d5-6024db9a0217")
-	)
-	(label "A30"
-		(at 167.64 -46.99 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "5a3ed852-6943-4876-8332-c4a550056803")
-	)
-	(label "A4"
-		(at 269.24 53.34 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "60113e1b-cb47-4896-8ebe-12f4360cefa3")
-	)
-	(label "A8"
-		(at 269.24 63.5 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "66306aff-00c6-4326-9f63-e35f110b8998")
-	)
-	(label "A25"
-		(at 269.24 111.76 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "6a25b836-4b14-4902-a964-64dce31a7299")
-	)
 	(label "A15"
 		(at 151.13 35.56 0)
 		(fields_autoplaced yes)
@@ -6011,94 +5956,6 @@
 			(justify left bottom)
 		)
 		(uuid "6c518c72-812c-40f8-9556-29a54d06418f")
-	)
-	(label "A9"
-		(at 154.94 -52.07 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "6dd58508-d1c7-4b03-b740-7f179f79591b")
-	)
-	(label "A28"
-		(at 269.24 119.38 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "6f6294b3-19ca-4a74-8ddb-5898117d0eae")
-	)
-	(label "A29"
-		(at 167.64 -49.53 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "6fe69b36-43c8-4c83-828a-b777ed9b5183")
-	)
-	(label "A26"
-		(at 177.8 -44.45 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "71f6cad8-24a0-4352-91d2-c85f90176fd5")
-	)
-	(label "A33"
-		(at 154.94 -44.45 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "73cf39e1-a9b5-4c5d-bac7-32082d0d2466")
-	)
-	(label "A11"
-		(at 177.8 -52.07 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "745cdf65-2633-4e79-b2f5-6a90b7437277")
-	)
-	(label "A11"
-		(at 269.24 71.12 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "7a602df3-f257-4ead-8c65-b092fb348dbe")
-	)
-	(label "A2"
-		(at 269.24 48.26 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "7d9691eb-0149-4350-81c3-856afd42849e")
 	)
 	(label "A16"
 		(at 248.92 102.87 0)
@@ -6111,50 +5968,6 @@
 		)
 		(uuid "830c3d1a-2e2b-4106-b741-f7f0c177563c")
 	)
-	(label "A7"
-		(at 187.96 -36.83 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "8cd9f7a1-ef20-487b-adb5-5373e8329174")
-	)
-	(label "A7"
-		(at 269.24 60.96 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "9047016b-24cd-4ff8-bb6d-ae1cf34e2016")
-	)
-	(label "A39"
-		(at 269.24 147.32 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "965dee44-5a7e-4bf6-841b-d9829e8c851d")
-	)
-	(label "A6"
-		(at 269.24 58.42 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "9829d791-b269-49b5-b05d-403d68c7b0c0")
-	)
 	(label "A17"
 		(at 151.13 58.42 0)
 		(fields_autoplaced yes)
@@ -6165,50 +5978,6 @@
 			(justify left bottom)
 		)
 		(uuid "99a82e7e-cd32-426f-ad76-26e55dc46fff")
-	)
-	(label "A4"
-		(at 187.96 -44.45 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "9ca1cf28-95b0-414a-a6a4-2c54176f75bd")
-	)
-	(label "A2"
-		(at 160.02 -52.07 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "9f58220c-bba8-487d-a19f-1d28d9a10dcc")
-	)
-	(label "A5"
-		(at 187.96 -41.91 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "a0b536d3-d147-48ce-bdfa-8111ac7d53e5")
-	)
-	(label "A25"
-		(at 177.8 -36.83 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "a255543b-c3da-43c7-a46e-c22f1c9008d2")
 	)
 	(label "A19"
 		(at 151.13 81.28 0)
@@ -6231,17 +6000,6 @@
 			(justify left bottom)
 		)
 		(uuid "a867074e-3126-4a9b-a5a2-c57257021fe3")
-	)
-	(label "A38"
-		(at 269.24 144.78 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "b251b71f-72c9-4f0c-b86d-736ff1f7ded1")
 	)
 	(label "A19"
 		(at 248.92 64.77 0)
@@ -6276,17 +6034,6 @@
 		)
 		(uuid "bb551240-f6f2-49e3-ac23-4c411b401a3a")
 	)
-	(label "A22"
-		(at 177.8 -57.15 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "bbbb1713-2f8e-4e3a-9aea-c0fb58b0d98f")
-	)
 	(label "A21"
 		(at 248.92 67.31 0)
 		(fields_autoplaced yes)
@@ -6298,28 +6045,6 @@
 		)
 		(uuid "c5c783f0-3e45-4a24-a69c-52502ffe17a3")
 	)
-	(label "A29"
-		(at 269.24 121.92 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "cbdace66-62b5-4041-906c-9450c63c53d8")
-	)
-	(label "A37"
-		(at 269.24 142.24 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "da8ce5f6-d742-484f-b027-27f30da28362")
-	)
 	(label "A35"
 		(at 170.18 72.39 0)
 		(fields_autoplaced yes)
@@ -6330,138 +6055,6 @@
 			(justify left bottom)
 		)
 		(uuid "dce721e2-0e6a-4a73-9c94-6353133f4e4d")
-	)
-	(label "A28"
-		(at 167.64 -52.07 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "dfa28b3e-21e6-44bc-b1a2-f0ccb1c6212c")
-	)
-	(label "A20"
-		(at 269.24 93.98 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "e185e00d-1e1e-4519-b535-382ebb0ef0ba")
-	)
-	(label "A27"
-		(at 187.96 -54.61 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "e1c3b45a-6b25-4896-8d50-dd2d4b117a1d")
-	)
-	(label "A27"
-		(at 269.24 116.84 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "e27f2fa2-492b-45d5-beb4-3cb4893cdc18")
-	)
-	(label "A24"
-		(at 269.24 109.22 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "e58be461-629f-48a5-bbd4-f3407ba93039")
-	)
-	(label "A36"
-		(at 269.24 139.7 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "e6116660-46f1-464b-b445-4279a5d442b7")
-	)
-	(label "A8"
-		(at 154.94 -54.61 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "e735e860-0904-43d9-8a18-fe92a1524d4d")
-	)
-	(label "A9"
-		(at 269.24 66.04 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "ecaa94ea-892c-4d82-8c1e-36cfbba9f546")
-	)
-	(label "A32"
-		(at 154.94 -46.99 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "eeb7c029-d57c-4179-8642-f9089c4162fd")
-	)
-	(label "A10"
-		(at 269.24 68.58 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "ef8bf43d-2d4c-47ea-b799-1029e1e0e0c7")
-	)
-	(label "A38"
-		(at 187.96 -49.53 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "fa7860a7-e026-4a2c-b9c3-f919d7c98d5b")
-	)
-	(label "A10"
-		(at 177.8 -54.61 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "fb731077-af62-4747-89b2-55287d89f40a")
 	)
 	(symbol
 		(lib_id "PCM_SL_Capacitors:10nF_Ceramic")
@@ -6594,6 +6187,73 @@
 			(project "7Analyzer"
 				(path "/dceeb1a9-ad1e-485a-bb61-44ce6645b5a9"
 					(reference "#PWR012")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "PCM_SL_Resistors:5.6k")
+		(at 46.99 25.4 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "105c9637-3acb-4531-acc3-44f1355df1f2")
+		(property "Reference" "R1"
+			(at 46.99 23.876 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "5.1k"
+			(at 48.514 27.178 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
+			(at 47.879 29.718 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 47.498 25.4 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "5.6kΩ, 1/4W Resistor"
+			(at 46.99 25.4 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "2519a17e-7f1f-4a99-886f-659bf9e54d6d")
+		)
+		(pin "1"
+			(uuid "f7ed57fb-7e9f-4fa9-b72c-0c2a396eb0bb")
+		)
+		(instances
+			(project ""
+				(path "/dceeb1a9-ad1e-485a-bb61-44ce6645b5a9"
+					(reference "R1")
 					(unit 1)
 				)
 			)
@@ -7209,6 +6869,7 @@
 				(font
 					(size 1.27 1.27)
 				)
+				(hide yes)
 			)
 		)
 		(property "Datasheet" "~"
@@ -9267,6 +8928,73 @@
 			(project "7Analyzer"
 				(path "/dceeb1a9-ad1e-485a-bb61-44ce6645b5a9"
 					(reference "J6")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "PCM_SL_Resistors:5.6k")
+		(at 46.99 30.48 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "e50d4d1f-7875-42fa-8693-a2ff562d6fa8")
+		(property "Reference" "R2"
+			(at 46.736 28.956 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "5.1k"
+			(at 47.244 32.512 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
+			(at 47.879 34.798 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 47.498 30.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "5.6kΩ, 1/4W Resistor"
+			(at 46.99 30.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "fac50867-b0b9-481d-aa9e-5ebc89d6cca6")
+		)
+		(pin "1"
+			(uuid "0417c746-b44f-4185-a09e-bc675829eb9b")
+		)
+		(instances
+			(project "7Analyzer"
+				(path "/dceeb1a9-ad1e-485a-bb61-44ce6645b5a9"
+					(reference "R2")
 					(unit 1)
 				)
 			)
