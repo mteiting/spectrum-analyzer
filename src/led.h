@@ -3,13 +3,13 @@
 #include <Arduino.h>
 #include <vector>
 
-#define BAND_1_PIN 23 // 15
-#define BAND_2_PIN 21 // 16
-#define BAND_3_PIN 19 // 17
+#define BAND_1_PIN 23
+#define BAND_2_PIN 21
+#define BAND_3_PIN 19
 #define BAND_4_PIN 18
-#define BAND_5_PIN 17 // 19
-#define BAND_6_PIN 16 // 21
-#define BAND_7_PIN 15 // 23
+#define BAND_5_PIN 17
+#define BAND_6_PIN 16
+#define BAND_7_PIN 15
 
 struct TstRGB
 {
