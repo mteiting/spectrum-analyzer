@@ -29,7 +29,7 @@ Band::Band(std::shared_ptr<Adafruit_NeoPixel> ledControl,
            uint8_t u8Number,
            uint16_t u16OffsetLED,
            uint16_t u16NumOfLEDs)
-    : _ledControl(ledControl),
+    : _ledControl(std::move(ledControl)),
       _u8Number(u8Number),
       _u16NumOfLEDs(u16NumOfLEDs),
       _u16LedOffset(u16OffsetLED),

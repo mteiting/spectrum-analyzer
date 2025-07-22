@@ -7,7 +7,6 @@
 #include "defaults.h"
 
 static arduinoFFT FFT = arduinoFFT();
-static QueueHandle_t i2s_event_queue;
 static uint32_t bands[] = {0, 0, 0, 0, 0, 0, 0};
 static std::vector<uint8_t> normalized_bands(BANDS, 0);
 
@@ -63,64 +62,118 @@ std::vector<uint8_t> &getBandsFromFFT()
   return normalized_bands;
 }
 
+/**
+ * @brief i2c interface < not used >
+ *
+ */
+// static QueueHandle_t i2s_event_queue;
+// void analyzerFFT_Setup()
+// {
+//   i2s_config_t i2s_config;
+//   i2s_config.mode = i2s_mode_t(I2S_MODE_MASTER | I2S_MODE_RX | I2S_MODE_ADC_BUILT_IN);
+//   i2s_config.sample_rate = SAMPLE_FREQUENCY;              // 120 KHz
+//   i2s_config.dma_buf_len = SAMPLE_SIZE;                   // 512
+//   i2s_config.channel_format = I2S_CHANNEL_FMT_ONLY_RIGHT; // Should be mono but doesn't seem to be
+//   i2s_config.bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT;
+//   i2s_config.use_apll = false,
+//   i2s_config.communication_format = I2S_COMM_FORMAT_STAND_I2S;
+//   i2s_config.intr_alloc_flags = ESP_INTR_FLAG_LEVEL1;
+//   i2s_config.dma_buf_count = 2;
+//   // install and start i2s driver
+//   i2s_driver_install(I2S_NUM_0, &i2s_config, 1, &i2s_event_queue);
+//   // Connect ADC to I2S
+//   i2s_set_adc_mode(ADC_UNIT_1, ADC1_CHANNEL_6);
+//   i2s_adc_enable(I2S_NUM_0);
+// }
+
+// void analyzerFFT_Task()
+// {
+//   static double vReal[SAMPLE_SIZE];
+//   static double vImag[SAMPLE_SIZE];
+//   uint16_t i2s_read_buff[SAMPLE_SIZE];
+//   size_t bytesRead = 0;
+//   system_event_t evt;
+
+//   if (xQueueReceive(i2s_event_queue, &evt, portMAX_DELAY) == pdPASS)
+//   {
+//     if (evt.event_id == 2)
+//     {
+//       i2s_read(I2S_NUM_0, (char *)i2s_read_buff, SAMPLE_SIZE * 2, &bytesRead, portMAX_DELAY);
+//       for (int i = 0; i < SAMPLE_SIZE; i++)
+//       {
+//         vReal[i] = static_cast<double>(i2s_read_buff[i] & 0xfff);
+//         vImag[i] = 0.0;
+//       }
+
+//       FFT.Windowing(vReal, SAMPLE_SIZE, FFT_WIN_TYP_HAMMING, FFT_FORWARD);
+//       FFT.Compute(vReal, vImag, SAMPLE_SIZE, FFT_FORWARD);
+//       FFT.ComplexToMagnitude(vReal, vImag, SAMPLE_SIZE);
+
+//       memset(bands, 0, sizeof(int) * 7);
+//       for (int i = 2; i < (SAMPLE_SIZE >> 1); i++)
+//       {
+//         if (vReal[i] < 2000.0)
+//           continue;
+
+//         createBands(i, static_cast<uint32_t>(vReal[i]));
+//       }
+
+//       for (int i = 0; i < BANDS; i++)
+//       {
+//         uint8_t value = static_cast<uint8_t>((bands[i] * 100) / 160000);
+//         if (value > 100)
+//           value = 100;
+//         normalized_bands[i] = value;
+//       }
+//     }
+//   }
+// }
+
+/**
+ * @brief double ADC raw with max sampling
+ *
+ */
 void analyzerFFT_Setup()
 {
-  i2s_config_t i2s_config;
-  i2s_config.mode = i2s_mode_t(I2S_MODE_MASTER | I2S_MODE_RX | I2S_MODE_ADC_BUILT_IN);
-  i2s_config.sample_rate = SAMPLE_FREQUENCY;              // 120 KHz
-  i2s_config.dma_buf_len = SAMPLE_SIZE;                   // 512
-  i2s_config.channel_format = I2S_CHANNEL_FMT_ONLY_RIGHT; // Should be mono but doesn't seem to be
-  i2s_config.bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT;
-  i2s_config.use_apll = false,
-  i2s_config.communication_format = I2S_COMM_FORMAT_STAND_I2S;
-  i2s_config.intr_alloc_flags = ESP_INTR_FLAG_LEVEL1;
-  i2s_config.dma_buf_count = 2;
-  // install and start i2s driver
-  i2s_driver_install(I2S_NUM_0, &i2s_config, 1, &i2s_event_queue);
-  // Connect ADC to I2S
-  i2s_set_adc_mode(ADC_UNIT_1, ADC1_CHANNEL_6);
-  i2s_adc_enable(I2S_NUM_0);
+  adc1_config_width(ADC_WIDTH_BIT_12);
+  adc1_config_channel_atten(ADC1_CHANNEL_6, ADC_ATTEN_DB_12);
+  adc1_config_channel_atten(ADC1_CHANNEL_7, ADC_ATTEN_DB_12);
 }
 
 void analyzerFFT_Task()
 {
   static double vReal[SAMPLE_SIZE];
   static double vImag[SAMPLE_SIZE];
-  uint16_t i2s_read_buff[SAMPLE_SIZE];
-  size_t bytesRead = 0;
-  system_event_t evt;
+  uint16_t samples_ch6[SAMPLE_SIZE];
+  uint16_t samples_ch7[SAMPLE_SIZE];
 
-  if (xQueueReceive(i2s_event_queue, &evt, portMAX_DELAY) == pdPASS)
+  for (int i = 0; i < SAMPLE_SIZE; i++)
   {
-    if (evt.event_id == 2)
-    {
-      i2s_read(I2S_NUM_0, (char *)i2s_read_buff, SAMPLE_SIZE * 2, &bytesRead, portMAX_DELAY);
-      for (int i = 0; i < SAMPLE_SIZE; i++)
-      {
-        vReal[i] = static_cast<double>(i2s_read_buff[i] & 0xfff);
-        vImag[i] = 0.0;
-      }
+    samples_ch6[i] = adc1_get_raw(ADC1_CHANNEL_6);
+    samples_ch7[i] = adc1_get_raw(ADC1_CHANNEL_7);
+    auto maxValue = std::max(samples_ch6[i], samples_ch7[i]);
+    vReal[i] = static_cast<double>(maxValue & 0xfff);
+    vImag[i] = 0.0;
+  }
 
-      FFT.Windowing(vReal, SAMPLE_SIZE, FFT_WIN_TYP_HAMMING, FFT_FORWARD);
-      FFT.Compute(vReal, vImag, SAMPLE_SIZE, FFT_FORWARD);
-      FFT.ComplexToMagnitude(vReal, vImag, SAMPLE_SIZE);
+  FFT.Windowing(vReal, SAMPLE_SIZE, FFT_WIN_TYP_HAMMING, FFT_FORWARD);
+  FFT.Compute(vReal, vImag, SAMPLE_SIZE, FFT_FORWARD);
+  FFT.ComplexToMagnitude(vReal, vImag, SAMPLE_SIZE);
 
-      memset(bands, 0, sizeof(int) * 7);
-      for (int i = 2; i < (SAMPLE_SIZE >> 1); i++)
-      {
-        if (vReal[i] < 2000.0)
-          continue;
+  memset(bands, 0, sizeof(int) * 7);
+  for (int i = 2; i < (SAMPLE_SIZE >> 1); i++)
+  {
+    if (vReal[i] < 2000.0)
+      continue;
 
-        createBands(i, static_cast<uint32_t>(vReal[i]));
-      }
+    createBands(i, static_cast<uint32_t>(vReal[i]));
+  }
 
-      for (int i = 0; i < BANDS; i++)
-      {
-        uint8_t value = static_cast<uint8_t>((bands[i] * 100) / 160000);
-        if (value > 100)
-          value = 100;
-        normalized_bands[i] = value;
-      }
-    }
+  for (int i = 0; i < BANDS; i++)
+  {
+    uint8_t value = static_cast<uint8_t>((bands[i] * 100) / 160000);
+    if (value > 100)
+      value = 100;
+    normalized_bands[i] = value;
   }
 }
