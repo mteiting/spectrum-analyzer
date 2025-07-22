@@ -131,7 +131,7 @@ std::vector<uint8_t> &getBandsFromFFT()
 
 /**
  * @brief double ADC raw with max sampling
- *
+ *        using ADC1 and Channel 6&7
  */
 void analyzerFFT_Setup()
 {
@@ -147,6 +147,7 @@ void analyzerFFT_Task()
   uint16_t samples_ch6[SAMPLE_SIZE];
   uint16_t samples_ch7[SAMPLE_SIZE];
 
+  // read both adc channels and use max value (if one mic dies, everything works otherwise the best wins)
   for (int i = 0; i < SAMPLE_SIZE; i++)
   {
     samples_ch6[i] = adc1_get_raw(ADC1_CHANNEL_6);
@@ -156,6 +157,7 @@ void analyzerFFT_Task()
     vImag[i] = 0.0;
   }
 
+  // caluclate fft
   FFT.Windowing(vReal, SAMPLE_SIZE, FFT_WIN_TYP_HAMMING, FFT_FORWARD);
   FFT.Compute(vReal, vImag, SAMPLE_SIZE, FFT_FORWARD);
   FFT.ComplexToMagnitude(vReal, vImag, SAMPLE_SIZE);
@@ -169,6 +171,7 @@ void analyzerFFT_Task()
     createBands(i, static_cast<uint32_t>(vReal[i]));
   }
 
+  // set band value and normilze it
   for (int i = 0; i < BANDS; i++)
   {
     uint8_t value = static_cast<uint8_t>((bands[i] * 100) / 160000);

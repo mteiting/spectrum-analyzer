@@ -7,8 +7,8 @@
 class IAnalyzer
 {
 public:
-  IAnalyzer(){};
-  virtual ~IAnalyzer(){};
+  IAnalyzer() {};
+  virtual ~IAnalyzer() {};
   virtual void setup() = 0;
   virtual std::vector<std::shared_ptr<Band>> getBands() = 0;
   virtual void setBand(std::shared_ptr<Band> &newBand) = 0;
@@ -30,17 +30,17 @@ public:
 };
 
 // For future stuff
-class AnalyzerIP : public IAnalyzer
-{
-private:
-  IPAddress _ipadress;
-  std::vector<std::shared_ptr<Band>> _bands;
+// class AnalyzerIP : public IAnalyzer
+// {
+// private:
+//   IPAddress _ipadress;
+//   std::vector<std::shared_ptr<Band>> _bands;
 
-public:
-  AnalyzerIP(IPAddress &ipadress);
-  virtual ~AnalyzerIP(){};
-  void setup() override;
-  std::vector<std::shared_ptr<Band>> getBands() override;
-  void setBand(std::shared_ptr<Band> &newBand) override;
-  void loop(std::vector<uint8_t> &newLevel) override;
-};
+// public:
+//   AnalyzerIP(IPAddress &ipadress);
+//   virtual ~AnalyzerIP(){};
+//   void setup() override;
+//   std::vector<std::shared_ptr<Band>> getBands() override;
+//   void setBand(std::shared_ptr<Band> &newBand) override;
+//   void loop(std::vector<uint8_t> &newLevel) override;
+// };
