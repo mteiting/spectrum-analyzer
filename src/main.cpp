@@ -88,6 +88,145 @@ static void toggleAll()
   _analyzer->loop(vSimValues);
 }
 
+void morseCode()
+{
+  constexpr uint32_t UNIT_MS = 500; // Länge eines "Punkts"
+  static const char *digitMorse[10] = {
+      "-----", // 0
+      ".----", // 1
+      "..---", // 2
+      "...--", // 3
+      "....-", // 4
+      ".....", // 5
+      "-....", // 6
+      "--...", // 7
+      "---..", // 8
+      "----."  // 9
+  };
+
+  // feste 7-stellige Zahl: 5 7 2 3 8 9 4 (jede Position -> ein Band)
+  static bool initialized = false;
+  static std::string number; // Länge muss BANDS sein
+  if (!initialized)
+  {
+    initialized = true;
+    number = "5723894";
+    // Wenn BANDS != 7, passe Größe an (truncate oder pad mit '0')
+    if (number.size() != BANDS)
+    {
+      number.resize(BANDS, '0');
+    }
+    Serial.print("Morse-Number: ");
+    Serial.println(number.c_str());
+  }
+
+  enum EState : uint8_t
+  {
+    SYMBOL_ON = 0,
+    SYMBOL_GAP = 1,
+    DIGIT_GAP = 2
+  };
+  static std::vector<EState> state(BANDS, DIGIT_GAP);
+  static std::vector<size_t> symbolIndex(BANDS, 0);
+  static std::vector<uint32_t> timer(BANDS, millis());
+
+  uint32_t now = millis();
+  const uint32_t GAP_DURATION = 10 * UNIT_MS; // Dauer der Pause zwischen Wiederholungen
+  // Prüfe, ob sich alle Bänder gerade in der Wiederholungs-Pause befinden und diese noch läuft.
+  bool allInGap = true;
+  bool gapActive = false;
+  for (size_t b = 0; b < BANDS; ++b)
+  {
+    if (state[b] != DIGIT_GAP)
+    {
+      allInGap = false;
+      break;
+    }
+    if (now - timer[b] < GAP_DURATION)
+      gapActive = true;
+  }
+
+  std::vector<uint8_t> vSimValues(BANDS, 0);
+
+  // Wenn alle Bänder in der Pause sind und die Pause noch aktiv ist => ledTest() anzeigen
+  if (allInGap && gapActive)
+  {
+    _analyzer->loop(vSimValues);
+    return;
+  }
+
+  for (size_t b = 0; b < BANDS; ++b)
+  {
+    if (now - timer[b] < 0) // overflow-safety
+      timer[b] = now;
+
+    char digitChar = (b < number.size()) ? number[b] : '0';
+    const char *morse = digitMorse[digitChar - '0'];
+
+    if (state[b] == SYMBOL_ON)
+    {
+      char sym = morse[symbolIndex[b]];
+      uint32_t dur = (sym == '.') ? UNIT_MS : (3 * UNIT_MS);
+      if (now - timer[b] >= dur)
+      {
+        // Wechsel in Symbol-Gap
+        state[b] = SYMBOL_GAP;
+        timer[b] = now;
+        vSimValues[b] = 0;
+      }
+      else
+      {
+        vSimValues[b] = 100;
+      }
+    }
+    else if (state[b] == SYMBOL_GAP)
+    {
+      // kurze Pause zwischen Symbolen (1 Einheit)
+      if (now - timer[b] >= UNIT_MS)
+      {
+        symbolIndex[b]++;
+        if (morse[symbolIndex[b]] == 0)
+        {
+          // Ende der Ziffer -> Pause zwischen Wiederholung der Ziffer (GAP_DURATION)
+          state[b] = DIGIT_GAP;
+          timer[b] = now;
+          symbolIndex[b] = 0;
+          vSimValues[b] = 0;
+        }
+        else
+        {
+          // nächstes Symbol ON
+          state[b] = SYMBOL_ON;
+          timer[b] = now;
+          vSimValues[b] = 100;
+        }
+      }
+      else
+      {
+        vSimValues[b] = 0;
+      }
+    }
+    else // DIGIT_GAP
+    {
+      // Pause zwischen Wiederholungen der Ziffer
+      if (now - timer[b] >= GAP_DURATION)
+      {
+        // Starte erneut mit erstem Symbol der Ziffer
+        state[b] = SYMBOL_ON;
+        timer[b] = now;
+        symbolIndex[b] = 0;
+        vSimValues[b] = 100;
+      }
+      else
+      {
+        vSimValues[b] = 0;
+      }
+    }
+  }
+
+  _analyzer->loop(vSimValues);
+}
+
 void loop()
 {
   WifiTask();
